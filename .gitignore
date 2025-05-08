@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### secret ###
-src/main/resources/secret.properties
+src/main/resources/secret.yml
