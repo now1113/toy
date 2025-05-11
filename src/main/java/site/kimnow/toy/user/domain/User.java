@@ -5,7 +5,7 @@ import site.kimnow.toy.user.command.JoinUser;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User {
 

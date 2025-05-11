@@ -3,6 +3,7 @@ package site.kimnow.toy.common.response;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import site.kimnow.toy.common.exception.ErrorCode;
 
 @Getter
 @Builder
@@ -39,6 +40,17 @@ public class CommonResponse<T> {
         );
     }
 
+    // 실패
+    public static <T> ResponseEntity<CommonResponse<T>> fail(ErrorCode errorCode) {
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(CommonResponse.<T>builder()
+                        .status(errorCode.getStatusCode())
+                        .message(errorCode.getMessage())
+                        .data(null)
+                        .build()
+                );
+
+    }
     // 실패
     public static <T> ResponseEntity<CommonResponse<T>> fail(String message, HttpStatus httpStatus) {
         return ResponseEntity.status(httpStatus).body(
