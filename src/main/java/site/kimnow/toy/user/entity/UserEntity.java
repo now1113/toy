@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import site.kimnow.toy.common.entity.BaseTimeEntity;
 import site.kimnow.toy.user.domain.User;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserEntity {
+public class UserEntity extends BaseTimeEntity {
 
     @Id
     private String id;
@@ -23,9 +24,6 @@ public class UserEntity {
     private String name;
     private String salt;
 
-    private LocalDateTime createTime;
-    private LocalDateTime modifyTime;
-
     public static UserEntity from(User user) {
         return UserEntity.builder()
                 .id(user.getId())
@@ -33,7 +31,6 @@ public class UserEntity {
                 .password(user.getPassword())
                 .name(user.getName())
                 .salt(user.getSalt())
-                .createTime(LocalDateTime.now())
                 .build();
     }
 }

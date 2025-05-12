@@ -3,6 +3,8 @@ package site.kimnow.toy.user.domain;
 import lombok.*;
 import site.kimnow.toy.user.command.JoinUser;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -14,6 +16,8 @@ public class User {
     private String password;
     private String name;
     private String salt;
+    private LocalDateTime createTime;
+    private LocalDateTime modifyTime;
 
     public static User from(JoinUser command) {
         return User.builder()

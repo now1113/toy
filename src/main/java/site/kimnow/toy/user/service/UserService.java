@@ -3,6 +3,7 @@ package site.kimnow.toy.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import site.kimnow.toy.user.command.JoinUser;
 import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.repository.UserRepositoryAdapter;
@@ -14,6 +15,7 @@ public class UserService {
 
     private final UserRepositoryAdapter userRepositoryAdapter;
 
+    @Transactional
     public void join(JoinUser command) {
         User user = User.from(command);
         userRepositoryAdapter.save(user);

@@ -1,5 +1,6 @@
 package site.kimnow.toy.user.endpoint;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class UserEndpoint {
     private final UserApplication userApplication;
 
     @PostMapping("/v1/join")
-    public ResponseEntity<CommonResponse<UserJoinResponse>> join(@RequestBody UserJoinRequest dto) {
+    public ResponseEntity<CommonResponse<UserJoinResponse>> join(@RequestBody @Valid UserJoinRequest dto) {
         UserJoinResponse response = userApplication.join(dto);
         return CommonResponse.success(response);
     }

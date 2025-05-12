@@ -3,7 +3,6 @@ package site.kimnow.toy.user.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import site.kimnow.toy.common.util.PasswordEncryptor;
 import site.kimnow.toy.common.util.RandomIdGenerator;
 import site.kimnow.toy.user.command.JoinUser;
@@ -18,15 +17,18 @@ public class UserApplication {
 
     private final UserService userService;
 
-    @Transactional
     public UserJoinResponse join(UserJoinRequest dto) {
+
+
+
         String userId = RandomIdGenerator.generate();
         String salt = PasswordEncryptor.generateSalt();
-        String encodedPassword = PasswordEncryptor.hash(dto.password(), salt);
 
-        JoinUser command = JoinUser.of(userId, dto.email(), encodedPassword, dto.name(), salt);
+        String encodedPassword = PasswordEncryptor.hash(dto.getPassword(), salt);
+
+        JoinUser command = JoinUser.of(userId, dto.getEmail(), encodedPassword, dto.getName(), salt);
         userService.join(command);
 
-        return UserJoinResponse.from(dto.name());
+        return UserJoinResponse.from(dto.getName());
     }
 }
