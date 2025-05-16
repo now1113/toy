@@ -1,36 +1,41 @@
 package site.kimnow.toy.user.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import site.kimnow.toy.common.entity.BaseTimeEntity;
 import site.kimnow.toy.user.domain.User;
 
-import java.time.LocalDateTime;
 
-@Entity(name = "user")
 @Builder
+@Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name= "user", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_user_email", columnNames = "email")
+})
 public class UserEntity extends BaseTimeEntity {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idx;
+    private String userId;
     private String email;
-    private String password;
     private String name;
+    private String password;
     private String salt;
 
     public static UserEntity from(User user) {
         return UserEntity.builder()
-                .id(user.getId())
+                .userId(user.getUserId())
                 .email(user.getEmail())
-                .password(user.getPassword())
                 .name(user.getName())
+                .password(user.getPassword())
                 .salt(user.getSalt())
                 .build();
+    }
+
+    public User toDomain() {
+        return User.fromEntity(this);
     }
 }

@@ -28,5 +28,9 @@ public class UserJoinRequest {
 
     @NotBlank
     private String confirmPassword;
+
+    public static UserJoinRequest of(String email, String name, String password, String confirmPassword) {
+        return new UserJoinRequest(email, name, password, confirmPassword);
+    }
 }
 

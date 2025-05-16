@@ -18,4 +18,9 @@ public class UserRepositoryAdapter implements UserRepository{
         UserEntity entity = UserEntity.from(user);
         userJpaRepository.save(entity);
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userJpaRepository.existsByEmail(email);
+    }
 }
