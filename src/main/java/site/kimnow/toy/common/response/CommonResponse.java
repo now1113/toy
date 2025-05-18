@@ -2,7 +2,6 @@ package site.kimnow.toy.common.response;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import site.kimnow.toy.common.exception.ErrorCode;
 
 @Getter
@@ -14,51 +13,44 @@ public class CommonResponse<T> {
     private final T data;
     private final String message;
 
-    // 성공
-    public static <T> ResponseEntity<CommonResponse<T>> success() {
+    // 성공: 기본 메시지
+    public static <T> CommonResponse<T> success() {
         return success(null, "SUCCESS");
     }
 
-    // 성공
-    public static <T> ResponseEntity<CommonResponse<T>> success(T data) {
-        return ResponseEntity.ok(
-                CommonResponse.<T>builder()
-                        .status(HttpStatus.OK.value())
-                        .data(data)
-                        .build()
-        );
+    // 성공: 데이터만
+    public static <T> CommonResponse<T> success(T data) {
+        return CommonResponse.<T>builder()
+                .status(HttpStatus.OK.value())
+                .data(data)
+                .message(null)
+                .build();
     }
 
-    // 성공
-    public static <T> ResponseEntity<CommonResponse<T>> success(T data, String message) {
-        return ResponseEntity.ok(
-                CommonResponse.<T>builder()
-                        .status(HttpStatus.OK.value())
-                        .data(data)
-                        .message(message)
-                        .build()
-        );
+    // ✅ 성공: 데이터 + 메시지
+    public static <T> CommonResponse<T> success(T data, String message) {
+        return CommonResponse.<T>builder()
+                .status(HttpStatus.OK.value())
+                .data(data)
+                .message(message)
+                .build();
     }
 
-    // 실패
-    public static <T> ResponseEntity<CommonResponse<T>> fail(ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getStatus())
-                .body(CommonResponse.<T>builder()
-                        .status(errorCode.getStatusCode())
-                        .message(errorCode.getMessage())
-                        .data(null)
-                        .build()
-                );
-
+    // 실패: ErrorCode 기반
+    public static <T> CommonResponse<T> fail(ErrorCode errorCode) {
+        return CommonResponse.<T>builder()
+                .status(errorCode.getStatusCode())
+                .message(errorCode.getMessage())
+                .data(null)
+                .build();
     }
-    // 실패
-    public static <T> ResponseEntity<CommonResponse<T>> fail(String message, HttpStatus httpStatus) {
-        return ResponseEntity.status(httpStatus).body(
-                CommonResponse.<T>builder()
-                        .status(httpStatus.value())
-                        .data(null)
-                        .message(message)
-                        .build()
-        );
+
+    // 실패: 메시지 + HttpStatus 수동 지정
+    public static <T> CommonResponse<T> fail(String message, HttpStatus httpStatus) {
+        return CommonResponse.<T>builder()
+                .status(httpStatus.value())
+                .message(message)
+                .data(null)
+                .build();
     }
 }

@@ -23,7 +23,8 @@ public class UserEntity extends BaseTimeEntity {
     private String email;
     private String name;
     private String password;
-    private String salt;
+    private String authority;
+    private boolean isDeleted;
 
     public static UserEntity from(User user) {
         return UserEntity.builder()
@@ -31,7 +32,8 @@ public class UserEntity extends BaseTimeEntity {
                 .email(user.getEmail())
                 .name(user.getName())
                 .password(user.getPassword())
-                .salt(user.getSalt())
+                .authority(user.getAuthority())
+                .isDeleted(user.isDeleted())
                 .build();
     }
 

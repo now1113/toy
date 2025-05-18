@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.entity.UserEntity;
+import site.kimnow.toy.user.exception.UserNotFoundException;
+
+import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -22,5 +25,17 @@ public class UserRepositoryAdapter implements UserRepository{
     @Override
     public boolean existsByEmail(String email) {
         return userJpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User findByUserId(String email) {
+        Optional<UserEntity> entity = userJpaRepository.findByEmail(email);
+
+        if (entity.isEmpty()) {
+            log.error("해당 이메일을 가진 사용자가 존재하지 않습니다. userEmail: {}", email);
+            throw new UserNotFoundException();
+        }
+
+        return entity.get().toDomain();
     }
 }

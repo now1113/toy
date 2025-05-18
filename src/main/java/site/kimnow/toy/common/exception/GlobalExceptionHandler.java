@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import site.kimnow.toy.common.response.CommonResponse;
+import site.kimnow.toy.common.response.ResponseUtil;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,26 +24,26 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CommonResponse<Void>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String errorMessage = getErrorMessage(ex.getBindingResult());
         log.warn("Validation failed: {}", errorMessage, ex);
-        return CommonResponse.fail(INVALID_INPUT.getMessage() + " : " + errorMessage, INVALID_INPUT.getStatus());
+        return ResponseUtil.fail(INVALID_INPUT.getMessage() + " : " + errorMessage,  INVALID_INPUT.getStatus());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<CommonResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
         log.warn("IllegalArgumentException: {}", ex.getMessage(), ex);
-        return CommonResponse.fail(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseUtil.fail(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<CommonResponse<Void>> handleBusinessException(BusinessException ex) {
         ErrorCode errorCode = ex.getErrorCode();
         log.warn("BusinessException occurred: {}", ex.getMessage());
-        return CommonResponse.fail(errorCode.getMessage(), errorCode.getStatus());
+        return ResponseUtil.fail(errorCode.getMessage(), errorCode.getStatus());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponse<Void>> handleException(Exception ex) {
         log.error("handleValidationExceptions", ex);
-        return CommonResponse.fail(INTERNAL_SERVER_ERROR);
+        return ResponseUtil.fail(INTERNAL_SERVER_ERROR);
     }
 
 
