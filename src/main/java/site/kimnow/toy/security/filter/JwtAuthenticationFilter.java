@@ -20,13 +20,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static site.kimnow.toy.common.constant.Constants.ACCESS_TOKEN;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
-    private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
     private static final String USER_SESSION = "userSession";
 
 
@@ -60,7 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         return Arrays.stream(request.getCookies())
-                .filter(cookie -> ACCESS_TOKEN_COOKIE_NAME.equals(cookie.getName()))
+                .filter(cookie -> ACCESS_TOKEN.equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElse(null);

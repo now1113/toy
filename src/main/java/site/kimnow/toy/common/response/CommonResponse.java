@@ -27,7 +27,7 @@ public class CommonResponse<T> {
                 .build();
     }
 
-    // ✅ 성공: 데이터 + 메시지
+    // 성공: 데이터 + 메시지
     public static <T> CommonResponse<T> success(T data, String message) {
         return CommonResponse.<T>builder()
                 .status(HttpStatus.OK.value())

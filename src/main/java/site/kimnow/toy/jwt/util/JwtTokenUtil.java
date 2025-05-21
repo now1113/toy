@@ -20,11 +20,11 @@ public class JwtTokenUtil {
     private static final String ROLE = "role";
 
     public String createAccessToken(String userId, String authority) {
-        return createToken(userId, authority, jwtProperties.getAccessTokenExpirationSeconds());
+        return createToken(userId, authority, jwtProperties.getAccessTokenExpirationMills());
     }
 
     public String createRefreshToken(String userId, String authority) {
-        return createToken(userId, authority, jwtProperties.getRefreshTokenExpirationSeconds());
+        return createToken(userId, authority, jwtProperties.getRefreshTokenExpirationMills());
     }
 
     // 토큰 생성

@@ -39,3 +39,6 @@ out/
 ### secret ###
 src/main/resources/secret.yml
 src/main/resources/secret.properties
+
+### querydsl ###
+src/main/generated

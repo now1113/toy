@@ -19,7 +19,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import site.kimnow.toy.common.util.PermitAllUrl;
+import site.kimnow.toy.common.constant.PermitAllUrl;
 import site.kimnow.toy.security.filter.JwtAuthenticationFilter;
 import site.kimnow.toy.security.filter.LoginAuthenticationFilter;
 

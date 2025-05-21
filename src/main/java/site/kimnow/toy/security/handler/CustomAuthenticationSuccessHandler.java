@@ -18,13 +18,14 @@ import site.kimnow.toy.security.vo.UserPrincipal;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static site.kimnow.toy.common.constant.Constants.ACCESS_TOKEN;
+
 @Component
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final JwtProperties jwtProperties;
-    private static final String ACCESS_TOKEN = "accessToken";
     private static final String DEFAULT_SAME_SITE = "Strict";
 
     @Override
@@ -43,7 +44,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 .secure(true)
                 .sameSite(DEFAULT_SAME_SITE)
                 .path("/")
-                .maxAge(jwtProperties.getAccessTokenExpirationSeconds() / 1000)
+                .maxAge(jwtProperties.getAccessTokenExpirationMills() / 1000)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

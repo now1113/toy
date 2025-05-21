@@ -11,6 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JwtProperties {
 
     private final String secret;
-    private final long accessTokenExpirationSeconds;
-    private final long refreshTokenExpirationSeconds;
+    private final long accessTokenExpirationMills;
+    private final long refreshTokenExpirationMills;
 }

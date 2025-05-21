@@ -24,7 +24,7 @@ public class UserApplication {
             throw new DuplicateEmailException(dto.getEmail());
         }
 
-        String encodedPassword  = passwordEncoder.encode(dto.getPassword());
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
 
         // 도메인 객체 생성
         User user = User.create(dto.getEmail(), dto.getName(), encodedPassword);
@@ -33,4 +33,5 @@ public class UserApplication {
 
         return UserJoinResponse.from(user.getName());
     }
+
 }
