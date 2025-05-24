@@ -11,6 +11,8 @@ import site.kimnow.toy.security.annotation.LoginUser;
 import site.kimnow.toy.user.dto.request.AuthenticatedUser;
 import site.kimnow.toy.user.exception.UnauthorizedException;
 
+import static site.kimnow.toy.common.constant.Constants.LOGIN_USER;
+
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
@@ -23,9 +25,9 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     public Object resolveArgument(MethodParameter parameter,
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory) throws Exception {
+                                  WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        Object userSession = request.getAttribute("userSession");
+        Object userSession = request.getAttribute(LOGIN_USER);
 
         if (userSession == null) {
             throw new UnauthorizedException();

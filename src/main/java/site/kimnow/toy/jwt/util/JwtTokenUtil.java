@@ -6,12 +6,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenUtil {
@@ -20,21 +22,24 @@ public class JwtTokenUtil {
     private static final String ROLE = "role";
 
     public String createAccessToken(String userId, String authority) {
-        return createToken(userId, authority, jwtProperties.getAccessTokenExpirationMills());
-    }
-
-    public String createRefreshToken(String userId, String authority) {
-        return createToken(userId, authority, jwtProperties.getRefreshTokenExpirationMills());
-    }
-
-    // 토큰 생성
-    public String createToken(String userId, String authority, long expireMills) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + expireMills);
+        Date expiry = new Date(now.getTime() + jwtProperties.getAccessTokenExpirationMills());
 
         return Jwts.builder()
                 .setSubject(userId)
                 .claim(ROLE, authority)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String createRefreshToken(String userId) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + jwtProperties.getRefreshTokenExpirationMills());
+
+        return Jwts.builder()
+                .setSubject(userId)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

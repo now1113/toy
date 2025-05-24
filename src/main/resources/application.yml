@@ -19,11 +19,16 @@ spring:
         hibernate.default_batch_fetch_size: 100
         dialect: org.hibernate.dialect.MySQLDialect
     open-in-view: false
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
 
 server:
   port: 8080
 
 jwt:
   secret: ${JWT_SECRET}
-  access-token-expiration-seconds: ${JWT_ACCESS_EXPIRATION}
-  refresh-token-expiration-seconds: ${JWT_REFRESH_EXPIRATION}
+  access-token-expiration-mills: ${JWT_ACCESS_EXPIRATION}
+  refresh-token-expiration-mills: ${JWT_REFRESH_EXPIRATION}

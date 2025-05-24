@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static site.kimnow.toy.common.constant.Constants.ACCESS_TOKEN;
+import static site.kimnow.toy.common.constant.Constants.LOGIN_USER;
 
 @Slf4j
 @Component
@@ -28,7 +29,6 @@ import static site.kimnow.toy.common.constant.Constants.ACCESS_TOKEN;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
-    private static final String USER_SESSION = "userSession";
 
 
     /**
@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String role = jwtTokenUtil.getRole(token);
 
             AuthenticatedUser authenticatedUser = AuthenticatedUser.of(userId, role);
-            request.setAttribute(USER_SESSION, authenticatedUser);
+            request.setAttribute(LOGIN_USER, authenticatedUser);
 
             List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(authenticatedUser, null, authorities);

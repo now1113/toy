@@ -14,12 +14,12 @@ import site.kimnow.toy.user.dto.response.UserJoinResponse;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserEndpoint {
 
     private final UserApplication userApplication;
 
-    @PostMapping("/join")
+    @PostMapping
     public ResponseEntity<CommonResponse<UserJoinResponse>> join(@RequestBody @Valid UserJoinRequest dto) {
         UserJoinResponse response = userApplication.join(dto);
         return ResponseUtil.ok(response);

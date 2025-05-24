@@ -13,11 +13,12 @@ import site.kimnow.toy.user.dto.request.LoginRequestDto;
 
 import java.io.IOException;
 
+import static site.kimnow.toy.common.constant.Constants.LOGIN_URL;
+
 public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final ObjectMapper om = new ObjectMapper();
     private boolean postOnly = true;
-    private static final String LOGIN_URL = "/api/v1/user/login";
 
     public LoginAuthenticationFilter(AuthenticationManager authenticationManager) {
         super.setAuthenticationManager(authenticationManager);

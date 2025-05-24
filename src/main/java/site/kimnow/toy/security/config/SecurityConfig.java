@@ -60,7 +60,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    AuthenticationConfiguration configuration) throws Exception {
-        //
         AuthenticationManager authenticationManager = configuration.getAuthenticationManager();
         LoginAuthenticationFilter loginFilter = new LoginAuthenticationFilter(authenticationManager);
         loginFilter.setAuthenticationSuccessHandler(customSuccessHandler);
@@ -70,8 +69,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(PermitAllUrl.getAll())
-                    .permitAll()
+                    .requestMatchers(PermitAllUrl.getAll()).permitAll()
                     .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex
