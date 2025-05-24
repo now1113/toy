@@ -5,7 +5,14 @@
 이 문서는 `jenkins.kimnow.site`에 HTTPS(SSL)를 적용하고 도메인으로 접근 가능하도록 설정하는 과정을 설명합니다.  
 인증서는 Let's Encrypt의 `certbot`을 Docker 기반으로 자동 발급하며, `nginx`는 리버스 프록시 역할을 합니다.
 
-본 문서는 실패했던 문제와 해결 과정을 함께 기록합니다.
+> 본 문서는 실패했던 문제와 해결 과정을 함께 기록합니다.
+> 
+> SSL Termination 구조로 구성되어 있으며,
+> 외부 사용자는 https://jenkins.kimnow.site로 접속하지만,
+> 내부적으로는 Nginx가 SSL을 종료하고 Jenkins 컨테이너와는 HTTP로 통신합니다.
+>
+>이를 통해 SSL 인증서 관리와 암복호화 부하를 Nginx에 집중시키고,
+>Jenkins는 별도의 SSL 설정 없이 운영이 가능합니다.
 
 ## 전제 조건
 
@@ -20,9 +27,11 @@
 ## 전체 흐름 요약
 
 ```text
-사용자 → https://jenkins.kimnow.site
-        → Nginx (443 포트)
-        → Jenkins 컨테이너 (내부 8088)
+[사용자 브라우저]
+⇅ HTTPS
+[ Nginx (SSL 종료) ]
+⇅ HTTP
+[ Jenkins 컨테이너 (8088) ]
 ```
 
 ## Nginx 설정 단계별 정리
@@ -32,18 +41,17 @@
 ```text
 server {
     listen 80;
-    server_name toy.kimnow.site jenkins.kimnow.site;
+    server_name toy.kimnow.store jenkins.kimnow.site;
 
-    # certbot challenge 경로 (SSL 인증용)
     location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
+        alias /var/www/certbot/.well-known/acme-challenge/;
     }
 
-    # 나머지 요청은 HTTPS로 리디렉션
     location / {
         return 301 https://$host$request_uri;
     }
 }
+
 ```
 > 인증서 발급 전에는 절대로 443 포트 관련 설정을 추가하면 안 됨. 인증서가 없으므로 nginx가 기동 실패함.
 
@@ -53,10 +61,10 @@ server {
 # HTTP 포트 (80)
 server {
     listen 80;
-    server_name toy.kimnow.site jenkins.kimnow.site;
+    server_name toy.kimnow.store jenkins.kimnow.site;
 
     location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
+        alias /var/www/certbot/.well-known/acme-challenge/;
     }
 
     location / {
@@ -64,35 +72,35 @@ server {
     }
 }
 
-# toy.kimnow.site HTTPS 설정
-server {
-    listen 443 ssl;
-    server_name toy.kimnow.site;
-
-    ssl_certificate /etc/letsencrypt/live/toy.kimnow.site/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/toy.kimnow.site/privkey.pem;
-
-    location / {
-        proxy_pass http://spring:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-
-# jenkins.kimnow.site HTTPS 설정
 server {
     listen 443 ssl;
     server_name jenkins.kimnow.site;
 
-    ssl_certificate /etc/letsencrypt/live/toy.kimnow.site/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/toy.kimnow.site/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/jenkins.kimnow.site/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/jenkins.kimnow.site/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
 
     location / {
-        proxy_pass http://jenkins:8088;
+        proxy_pass http://jenkins:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header X-Forwarded-Host $host;
+
+        proxy_redirect     off;
+        proxy_http_version 1.1;
+        proxy_request_buffering off;
+
+        # Jenkins WebSocket 지원
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
     }
 }
+
 ```
 
 ## 인증서 발급 (certbot-run.sh)
@@ -100,31 +108,21 @@ server {
 ```bash
 #!/bin/bash
 
-EMAIL="your@email.com"
-DOMAINS=(-d toy.kimnow.site -d jenkins.kimnow.site)
+EMAIL="now@example.com"
+DOMAINS=(-d toy.kimnow.site)
+
 CERT_DIR="./nginx/ssl"
 WEBROOT_DIR="./nginx/www"
 
-echo "🟡 기존 nginx 중지..."
-docker stop nginx 2>/dev/null
-
-echo "📁 인증용 디렉토리 생성 중..."
+echo "인증용 디렉토리 생성 중..."
 mkdir -p "$WEBROOT_DIR/.well-known/acme-challenge"
 
-echo "🟢 임시 nginx 컨테이너로 80 포트 개방 중..."
-docker run -d --name certbot-nginx-temp \
-  -p 80:80 \
-  -v "$PWD/$WEBROOT_DIR:/usr/share/nginx/html" \
-  nginx:latest
-
-sleep 3
-
-echo "🔐 인증서 발급 요청 중..."
+echo "인증서 발급 요청 중..."
 docker run --rm \
   -v "$PWD/$CERT_DIR:/etc/letsencrypt" \
-  -v "$PWD/$WEBROOT_DIR:/usr/share/nginx/html" \
+  -v "$PWD/$WEBROOT_DIR:/var/www/certbot" \
   certbot/certbot certonly \
-  --webroot -w /usr/share/nginx/html \
+  --webroot -w /var/www/certbot \
   --email "$EMAIL" \
   --agree-tos \
   --no-eff-email \
@@ -133,15 +131,10 @@ docker run --rm \
 
 RESULT=$?
 
-echo "🧹 임시 nginx 컨테이너 정리 중..."
-docker stop certbot-nginx-temp && docker rm certbot-nginx-temp
-
 if [ $RESULT -eq 0 ]; then
-  echo "✅ 인증서 발급 성공. nginx 다시 시작..."
-  docker start nginx
+  echo "인증서 발급 성공."
 else
-  echo "❌ 인증서 발급 실패. nginx 다시 시작..."
-  docker start nginx
+  echo "인증서 발급 실패."
 fi
 ```
 
