@@ -29,7 +29,6 @@
 ```bash
 toy-infra/
 ├── docker-compose.yml
-├── .env
 ├── nginx/
 │   ├── conf.d/
 │   └── ssl/
@@ -37,12 +36,8 @@ toy-infra/
 │   ├── Dockerfile
 │   └── jenkins_home/
 ├── mysql/
-│   ├── init.sql
 │   └── data/
 ├── redis/
-├── spring/
-│   └── Dockerfile
-│   └── app.jar
 ```
 
 
