@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'toy'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Docker Login & Build & Push') {
+            steps {
+                withCredentials([
+                        string(credentialsId: 'dockerhub-username', variable: 'DOCKER_USERNAME'),
+                        string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASSWORD')
+                ]) {
+                    script {
+                        def imageTag = "${DOCKER_USERNAME}/${APP_NAME}:latest"
+                        sh '''
+              echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+              docker build -t ''' + imageTag + ''' -f infra/Dockerfile .
+              docker push ''' + imageTag + '''
+            '''
+                    }
+                }
+            }
+        }
+    }
+}
