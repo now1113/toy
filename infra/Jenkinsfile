@@ -12,18 +12,24 @@ pipeline {
             }
         }
 
+        stage('Build JAR') {
+            steps {
+                sh './gradlew clean build -x test'
+            }
+        }
+
         stage('Docker Login & Build') {
             steps {
                 withCredentials([
-                        string(credentialsId: 'dockerhub-username', variable: 'DOCKER_USERNAME'),
+                        string(credentialsId: 'docker-hub-username', variable: 'DOCKER_USERNAME'),
                         string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASSWORD')
                 ]) {
                     script {
                         def imageTag = "${DOCKER_USERNAME}/${APP_NAME}:latest"
-                        sh '''
-                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                        docker build -t ''' + imageTag + ''' -f infra/Dockerfile .
-                        '''
+                        sh """
+                            echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin
+                            docker build -t ${imageTag} -f infra/Dockerfile .
+                        """
                     }
                 }
             }
@@ -38,9 +44,7 @@ pipeline {
             steps {
                 script {
                     def imageTag = "${DOCKER_USERNAME}/${APP_NAME}:latest"
-                    sh '''
-                    docker push ''' + imageTag + '''
-                    '''
+                    sh "docker push ${imageTag}"
                 }
             }
         }
