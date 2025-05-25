@@ -12,7 +12,7 @@ pipeline {
             }
         }
 
-        stage('Docker Login & Build & Push') {
+        stage('Docker Login & Build') {
             steps {
                 withCredentials([
                         string(credentialsId: 'dockerhub-username', variable: 'DOCKER_USERNAME'),
@@ -21,11 +21,26 @@ pipeline {
                     script {
                         def imageTag = "${DOCKER_USERNAME}/${APP_NAME}:latest"
                         sh '''
-              echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-              docker build -t ''' + imageTag + ''' -f infra/Dockerfile .
-              docker push ''' + imageTag + '''
-            '''
+                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                        docker build -t ''' + imageTag + ''' -f infra/Dockerfile .
+                        '''
                     }
+                }
+            }
+        }
+
+        stage('Docker Push (only if PR to main)') {
+            when {
+                expression {
+                    return env.CHANGE_ID && env.CHANGE_TARGET == 'main'
+                }
+            }
+            steps {
+                script {
+                    def imageTag = "${DOCKER_USERNAME}/${APP_NAME}:latest"
+                    sh '''
+                    docker push ''' + imageTag + '''
+                    '''
                 }
             }
         }
