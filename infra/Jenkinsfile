@@ -43,9 +43,46 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    def imageTag = "${DOCKER_USERNAME}/${APP_NAME}:latest"
-                    sh "docker push ${imageTag}"
+                withCredentials([
+                        string(credentialsId: 'docker-hub-username', variable: 'DOCKER_USERNAME')
+                ]) {
+                    script {
+                        def imageTag = "${DOCKER_USERNAME}/${APP_NAME}:latest"
+                        sh "docker push ${imageTag}"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy on Local Jenkins Server (only if PR to main)') {
+            when {
+                expression {
+                    return env.CHANGE_ID && env.CHANGE_TARGET == 'main'
+                }
+            }
+            steps {
+                withCredentials([
+                        string(credentialsId: 'docker-hub-username', variable: 'DOCKER_USERNAME')
+                ]) {
+                    script {
+                        def imageTag = "${DOCKER_USERNAME}/${APP_NAME}:latest"
+                        sh """
+                            echo "[1] Pulling latest image"
+                            docker pull ${imageTag}
+
+                            echo "[2] Stopping old container"
+                            docker stop toy-app 2>/dev/null || true
+                            docker rm toy-app 2>/dev/null || true
+
+                            echo "[3] Running new container"
+                            docker run -d --name toy-app \\
+                              -p 8080:8080 \\
+                              --restart=always \\
+                              ${imageTag}
+
+                            echo "[4] Deployment complete"
+                        """
+                    }
                 }
             }
         }
