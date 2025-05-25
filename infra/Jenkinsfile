@@ -85,6 +85,7 @@ pipeline {
 
                             echo "[3] Running new container"
                             docker run -d --name toy-app \\
+                              --network=toy-infra_toy-net \\
                               -p 8080:8080 \\
                               --restart=always \\
                               -e SPRING_PROFILES_ACTIVE=prod \\
