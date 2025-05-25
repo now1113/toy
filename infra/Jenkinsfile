@@ -87,6 +87,8 @@ pipeline {
                             docker run -d --name toy-app \\
                               -p 8080:8080 \\
                               --restart=always \\
+                              -e SPRING_PROFILES_ACTIVE=prod \\
+                              -v /home/now/toy-secret:/config \\
                               ${imageTag}
 
                             echo "[4] Deployment complete"
