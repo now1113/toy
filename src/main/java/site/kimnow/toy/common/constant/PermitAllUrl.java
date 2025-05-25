@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public class PermitAllUrl {
 
     public static RequestMatcher[] getAll() {
-        return Stream.of(SWAGGER, AUTH)
+        return Stream.of(SWAGGER, AUTH, ROOT)
                 .flatMap(Arrays::stream)
                 .toArray(RequestMatcher[]::new);
     }
@@ -20,6 +20,10 @@ public class PermitAllUrl {
     private static final RequestMatcher[] SWAGGER = {
             new AntPathRequestMatcher("/swagger-ui/**", "GET"),
             new AntPathRequestMatcher("/v3/api-docs/**", "GET")
+    };
+
+    private static final RequestMatcher[] ROOT = {
+            new AntPathRequestMatcher("/", "GET")
     };
 
     private static final RequestMatcher[] AUTH = {
