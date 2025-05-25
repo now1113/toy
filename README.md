@@ -7,6 +7,7 @@
 ## 관련 문서
 
 - [docs/infra.md](./docs/infra.md): toy 프로젝트의 서버 인프라 및 배포 환경 구성
+- [docs/ci-cd.md](./docs/ci-cd.md): toy 프로젝트의 CI/CD 환경 구성
 - [docs/ssl-setup.md](./docs/ssl-setup.md): 도메인 기반 SSL 인증 및 nginx 설정
 
 ## 시도 중인 주제
