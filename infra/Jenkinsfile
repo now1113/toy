@@ -36,10 +36,10 @@ pipeline {
             }
         }
 
-        stage('Docker Push (only if PR to main)') {
+        stage('Docker Push') {
             when {
                 expression {
-                    return env.CHANGE_ID && env.CHANGE_TARGET == 'main'
+                    return env.BRANCH_NAME == 'main'
                 }
             }
             steps {
@@ -54,10 +54,10 @@ pipeline {
             }
         }
 
-        stage('Deploy on Local Jenkins Server (only if PR to main)') {
+        stage('Deploy on Local Jenkins Server') {
             when {
                 expression {
-                    return env.CHANGE_ID && env.CHANGE_TARGET == 'main'
+                    return env.BRANCH_NAME == 'main'
                 }
             }
             steps {
