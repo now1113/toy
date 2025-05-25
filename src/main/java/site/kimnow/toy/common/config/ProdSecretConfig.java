@@ -6,6 +6,6 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @Profile("prod")
-@PropertySource("classpath:secret.properties")
+@PropertySource(value = "file:/config/secret.properties", ignoreResourceNotFound = true)
 public class ProdSecretConfig {
 }
