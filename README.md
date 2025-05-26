@@ -10,14 +10,6 @@
 - [docs/ci-cd.md](./docs/ci-cd.md): toy 프로젝트의 CI/CD 환경 구성
 - [docs/ssl-setup.md](./docs/ssl-setup.md): 도메인 기반 SSL 인증 및 nginx 설정
 
-## 시도 중인 주제
-
-- JWT + Cookie 기반 인증 구조
-- 커스텀 Spring Security Filter 적용
-- @LoginUser와 ArgumentResolver로 MSA-friendly 인증 처리
-- 도커 기반 인프라 구성 (Nginx + MySQL + Redis + Jenkins)
-- CI/CD 파이프라인 (GitHub -> Jenkins -> DockerHub)
-- REST API 설계, API 명세 자동화 (OpenAPI)
 
 > 새로운 기술을 적용하거나 리팩토링이 잦습니다. 실험적인 코드가 많습니다.
 
