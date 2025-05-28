@@ -31,6 +31,7 @@
 src/main/java/site/kimnow/toy/
 ├── home/           # 홈 페이지 컨트롤러 (화면 이동)
 ├── auth/           # 인증 도메인 (로그인, 토큰 재발급 등)
+├── product/        # 상품
 ├── user/           # 사용자 도메인 (회원가입, 조회 등)
 ├── common/         # 공통 유틸, 예외, 상수, 응답 객체 등
 ├── jwt/            # JWT 관련 설정 및 유틸
