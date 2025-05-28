@@ -21,6 +21,23 @@ pipeline {
             }
         }
 
+        stage('Skip if only README or docs changed') {
+            steps {
+                script {
+                    def changedFiles = sh(script: "git diff --name-only HEAD~1", returnStdout: true).trim().split('\n')
+                    def filtered = changedFiles.findAll { !it.matches(/README\.md|docs\/.*/) }
+
+                    if (filtered.isEmpty()) {
+                        echo "변경된 파일이 README.md 또는 docs/ 뿐입니다. 빌드를 스킵합니다."
+                        currentBuild.result = 'SUCCESS'
+                        exit 0
+                    } else {
+                        echo "코드 변경이 감지되었습니다. 빌드를 계속 진행합니다."
+                    }
+                }
+            }
+        }
+
         stage('Build JAR') {
             steps {
                 sh 'chmod +x gradlew'
