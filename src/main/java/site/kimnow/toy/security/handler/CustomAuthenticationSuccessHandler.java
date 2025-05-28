@@ -14,6 +14,7 @@ import site.kimnow.toy.common.response.CommonResponse;
 import site.kimnow.toy.jwt.util.JwtProperties;
 import site.kimnow.toy.jwt.util.JwtTokenUtil;
 import site.kimnow.toy.redis.service.TokenRedisService;
+import site.kimnow.toy.redis.service.UserRoleRedisService;
 import site.kimnow.toy.security.vo.UserPrincipal;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final JwtTokenUtil jwtTokenUtil;
     private final JwtProperties jwtProperties;
     private final TokenRedisService tokenRedisService;
+    private final UserRoleRedisService userRoleRedisService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -43,6 +45,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         addTokens(accessToken, refreshToken, response);
 
         tokenRedisService.save(userId, refreshToken, Duration.ofDays(14));
+        userRoleRedisService.save(userId, authority, Duration.ofDays(14));
 
         CommonResponse<String> successResponse = CommonResponse.success("로그인에 성공했습니다.");
         String json = new ObjectMapper().writeValueAsString(successResponse);

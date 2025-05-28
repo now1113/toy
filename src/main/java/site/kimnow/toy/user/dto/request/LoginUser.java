@@ -6,11 +6,11 @@ import lombok.*;
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AuthenticatedUser {
+public class LoginUser {
     private String userId;
     private String role;
-    public static AuthenticatedUser of(String userId, String role) {
-        return AuthenticatedUser.builder()
+    public static LoginUser of(String userId, String role) {
+        return LoginUser.builder()
                 .userId(userId)
                 .role(role)
                 .build();

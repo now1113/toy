@@ -11,11 +11,13 @@ import site.kimnow.toy.auth.exception.AuthErrorCode;
 import site.kimnow.toy.jwt.util.JwtProperties;
 import site.kimnow.toy.jwt.util.JwtTokenUtil;
 import site.kimnow.toy.redis.service.TokenRedisService;
+import site.kimnow.toy.redis.service.UserRoleRedisService;
 import site.kimnow.toy.user.exception.UnauthorizedException;
 
 import static site.kimnow.toy.auth.exception.AuthErrorCode.REFRESH_TOKEN_INVALID;
 import static site.kimnow.toy.auth.exception.AuthErrorCode.REFRESH_TOKEN_NOT_FOUND;
 import static site.kimnow.toy.common.constant.Constants.ACCESS_TOKEN;
+import static site.kimnow.toy.common.constant.Constants.REFRESH_TOKEN;
 
 @Slf4j
 @Component
@@ -25,11 +27,13 @@ public class AuthApplication {
     private final JwtTokenUtil jwtTokenUtil;
     private final JwtProperties jwtProperties;
     private final TokenRedisService tokenRedisService;
+    private final UserRoleRedisService userRoleRedisService;
 
     public void reissue(String refreshToken, HttpServletResponse response) {
         validateRefreshToken(refreshToken);
         String userId = jwtTokenUtil.getUserId(refreshToken);
-        String authority = jwtTokenUtil.getRole(refreshToken);
+        String role = userRoleRedisService.get(userId)
+                .orElseThrow(UnauthorizedException::new);
 
         // Redis에서 저장된 refreshToken과 비교
         String savedToken = tokenRedisService.get(userId)
@@ -39,7 +43,7 @@ public class AuthApplication {
             throw new UnauthorizedException(REFRESH_TOKEN_INVALID);
         }
 
-        String newAccessToken = jwtTokenUtil.createAccessToken(userId, authority);
+        String newAccessToken = jwtTokenUtil.createAccessToken(userId, role);
         ResponseCookie accessCookie = ResponseCookie.from(ACCESS_TOKEN, newAccessToken)
                 .httpOnly(true)
                 .secure(true)
@@ -58,8 +62,8 @@ public class AuthApplication {
         tokenRedisService.delete(userId);
 
         // 쿠키 만료
-        expireCookie("accessToken", response);
-        expireCookie("refreshToken", response);
+        expireCookie(ACCESS_TOKEN, response);
+        expireCookie(REFRESH_TOKEN, response);
     }
 
     private void expireCookie(String name, HttpServletResponse response) {
