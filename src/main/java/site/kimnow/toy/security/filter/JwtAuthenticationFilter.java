@@ -1,5 +1,6 @@
 package site.kimnow.toy.security.filter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -14,14 +15,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import site.kimnow.toy.jwt.util.JwtTokenUtil;
-import site.kimnow.toy.user.dto.request.AuthenticatedUser;
+import site.kimnow.toy.user.dto.request.LoginUser;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import static site.kimnow.toy.common.constant.Constants.ACCESS_TOKEN;
-import static site.kimnow.toy.common.constant.Constants.LOGIN_USER;
 
 @Slf4j
 @Component
@@ -29,7 +29,6 @@ import static site.kimnow.toy.common.constant.Constants.LOGIN_USER;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
-
 
     /**
      *  JWT 토큰을 Cookie에서 추출하여 검증. 유효하면 request에 사용자 정보 설정
@@ -39,19 +38,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = extractTokenFromCookie(request);
+        try {
+            if (token != null && jwtTokenUtil.validateToken(token)) {
+                String userId = jwtTokenUtil.getUserId(token);
+                String role = jwtTokenUtil.getRole(token);
 
-        if (token != null && jwtTokenUtil.validateToken(token)) {
-            String userId = jwtTokenUtil.getUserId(token);
-            String role = jwtTokenUtil.getRole(token);
+                LoginUser loginUser = LoginUser.of(userId, role);
 
-            AuthenticatedUser authenticatedUser = AuthenticatedUser.of(userId, role);
-            request.setAttribute(LOGIN_USER, authenticatedUser);
+                List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginUser, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
 
-            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(authenticatedUser, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (ExpiredJwtException e) {
+            log.debug("AccessToken expired, skipping authentication setup");
         }
-
         filterChain.doFilter(request, response);
     }
 
