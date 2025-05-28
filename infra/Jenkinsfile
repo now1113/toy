@@ -1,3 +1,6 @@
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import hudson.model.Result
+
 pipeline {
     agent any
 
@@ -17,23 +20,6 @@ pipeline {
                 script {
                     env.BRANCH_NAME = env.GIT_BRANCH?.split('/')[-1]
                     echo "Current Branch: ${env.BRANCH_NAME}"
-                }
-            }
-        }
-
-        stage('Skip if only README or docs changed') {
-            steps {
-                script {
-                    def changedFiles = sh(script: "git diff --name-only HEAD~1", returnStdout: true).trim().split('\n')
-                    def filtered = changedFiles.findAll { !it.matches(/README\.md|docs\/.*/) }
-
-                    if (filtered.isEmpty()) {
-                        echo "변경된 파일이 README.md 또는 docs/ 뿐입니다. 빌드를 스킵합니다."
-                        currentBuild.result = 'NOT_BUILT'
-                        return
-                    } else {
-                        echo "코드 변경이 감지되었습니다. 빌드를 계속 진행합니다."
-                    }
                 }
             }
         }
