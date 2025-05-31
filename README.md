@@ -6,7 +6,7 @@
 
 ## 관련 문서
 
-- [docs/backend-architecture-guide.md](./docs/backend-architecture-guide.md): 도메인 기반 설계 철학과 계층 구조, 공통 개발 원칙을 정리한 백엔드 아키텍처 가이드
+- [docs/backend-architecture-guide.md](./docs/backend-architecture-guide.md): 도메인 기반 계층 구조와 공통 개발 기준을 담은 toy 프로젝트 백엔드 가이드
 - [docs/infra.md](./docs/infra.md): toy 프로젝트의 서버 인프라 및 배포 환경 구성
 - [docs/ci-cd.md](./docs/ci-cd.md): toy 프로젝트의 CI/CD 환경 구성
 - [docs/ssl-setup.md](./docs/ssl-setup.md): 도메인 기반 SSL 인증 및 Nginx 리버스 프록시 설정
