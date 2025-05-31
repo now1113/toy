@@ -14,6 +14,8 @@ import site.kimnow.toy.redis.service.TokenRedisService;
 import site.kimnow.toy.redis.service.UserRoleRedisService;
 import site.kimnow.toy.user.exception.UnauthorizedException;
 
+import java.time.Duration;
+
 import static site.kimnow.toy.auth.exception.AuthErrorCode.REFRESH_TOKEN_INVALID;
 import static site.kimnow.toy.auth.exception.AuthErrorCode.REFRESH_TOKEN_NOT_FOUND;
 import static site.kimnow.toy.common.constant.Constants.ACCESS_TOKEN;
@@ -31,19 +33,25 @@ public class AuthApplication {
 
     public void reissue(String refreshToken, HttpServletResponse response) {
         validateRefreshToken(refreshToken);
-        String userId = jwtTokenUtil.getUserId(refreshToken);
-        String role = userRoleRedisService.get(userId)
-                .orElseThrow(UnauthorizedException::new);
 
-        // Redis에서 저장된 refreshToken과 비교
-        String savedToken = tokenRedisService.get(userId)
+        String userId = getUserIdIfValid(refreshToken);
+        String role = getUserRole(userId);
+
+        rotateRefreshToken(refreshToken);
+        generateAndAttachCookies(response, userId, role);
+    }
+
+    private String getUserIdIfValid(String refreshToken) {
+        return tokenRedisService.get((refreshToken))
                 .orElseThrow(() -> new UnauthorizedException(REFRESH_TOKEN_NOT_FOUND));
+    }
 
-        if (!refreshToken.equals(savedToken)) {
-            throw new UnauthorizedException(REFRESH_TOKEN_INVALID);
-        }
-
+    private void generateAndAttachCookies(HttpServletResponse response, String userId, String role) {
         String newAccessToken = jwtTokenUtil.createAccessToken(userId, role);
+        String newRefreshToken = jwtTokenUtil.createRefreshToken(userId);
+
+        tokenRedisService.save(userId, newRefreshToken, Duration.ofDays(14));
+
         ResponseCookie accessCookie = ResponseCookie.from(ACCESS_TOKEN, newAccessToken)
                 .httpOnly(true)
                 .secure(true)
@@ -52,7 +60,25 @@ public class AuthApplication {
                 .maxAge(jwtProperties.getAccessTokenExpirationMills() / 1000)
                 .build();
 
+        ResponseCookie refreshCookie = ResponseCookie.from(REFRESH_TOKEN, newRefreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(jwtProperties.getRefreshTokenExpirationMills() / 1000)
+                .build();
+
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+    }
+
+    private String getUserRole(String userId) {
+        return userRoleRedisService.get(userId)
+                .orElseThrow(UnauthorizedException::new);
+    }
+
+    private void rotateRefreshToken(String oldToken) {
+        tokenRedisService.delete(oldToken);
     }
 
     public void logout(String refreshToken, HttpServletResponse response) {
