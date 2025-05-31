@@ -1,4 +1,4 @@
-# Backend Architecture & Coding Style Guide
+# backend-architecture-guide
 
 ## 1. 철학 및 전제
 
