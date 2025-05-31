@@ -19,13 +19,13 @@ public class TokenRedisService {
     private final RedissonClient redissonClient;
 
     public void save(String userId, String refreshToken, Duration ttl) {
-        String key = REDIS_REFRESH_PREFIX + userId;
+        String key = REDIS_REFRESH_PREFIX + refreshToken;
         RBucket<String> bucket = redissonClient.getBucket(key);
-        bucket.set(refreshToken, ttl);
+        bucket.set(userId, ttl);
     }
 
-    public Optional<String> get(String userId) {
-        String key = REDIS_REFRESH_PREFIX + userId;
+    public Optional<String> get(String refreshToken) {
+        String key = REDIS_REFRESH_PREFIX + refreshToken;
         RBucket<String> bucket = redissonClient.getBucket(key);
         return Optional.ofNullable(bucket.get());
     }

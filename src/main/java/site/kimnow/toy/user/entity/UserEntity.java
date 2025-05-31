@@ -3,7 +3,6 @@ package site.kimnow.toy.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import site.kimnow.toy.common.entity.BaseTimeEntity;
-import site.kimnow.toy.user.domain.User;
 
 
 @Builder
@@ -25,19 +24,4 @@ public class UserEntity extends BaseTimeEntity {
     private String password;
     private String authority;
     private boolean isDeleted;
-
-    public static UserEntity from(User user) {
-        return UserEntity.builder()
-                .userId(user.getUserId())
-                .email(user.getEmail())
-                .name(user.getName())
-                .password(user.getPassword())
-                .authority(user.getAuthority())
-                .isDeleted(user.isDeleted())
-                .build();
-    }
-
-    public User toDomain() {
-        return User.fromEntity(this);
-    }
 }

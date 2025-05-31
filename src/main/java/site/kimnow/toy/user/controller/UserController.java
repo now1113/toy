@@ -1,4 +1,4 @@
-package site.kimnow.toy.user.endpoint;
+package site.kimnow.toy.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import site.kimnow.toy.user.dto.response.UserJoinResponse;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
-public class UserEndpoint {
+public class UserController {
 
     private final UserApplication userApplication;
 

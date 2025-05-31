@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.entity.UserEntity;
 import site.kimnow.toy.user.exception.UserNotFoundException;
+import site.kimnow.toy.user.mapper.UserMapper;
 
 import java.util.Optional;
 
@@ -18,7 +19,7 @@ public class UserRepositoryAdapter implements UserRepository{
 
     @Override
     public void save(User user) {
-        UserEntity entity = UserEntity.from(user);
+        UserEntity entity = UserMapper.toEntity(user);
         userJpaRepository.save(entity);
     }
 
@@ -36,6 +37,8 @@ public class UserRepositoryAdapter implements UserRepository{
             throw new UserNotFoundException();
         }
 
-        return entity.get().toDomain();
+        UserEntity userEntity = entity.get();
+
+        return UserMapper.toDomain(userEntity);
     }
 }
