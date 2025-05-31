@@ -39,7 +39,7 @@ public class UserApplicationTest {
             // given
             UserJoinRequest request = UserJoinRequest.of("test@example.com", "홍길동", "!@toto1234", "!@toto1234");
 
-            given(userService.existsByEmail(request.getEmail())).willReturn(false);
+            doNothing().when(userService).join(any(User.class));
 
             // when
             UserJoinResponse response = userApplication.join(request);
@@ -47,7 +47,6 @@ public class UserApplicationTest {
             // then
             assertEquals("홍길동", response.getName());
 
-            verify(userService, times(1)).existsByEmail(request.getEmail());
             verify(userService, times(1)).join(any(User.class));
         }
     }
@@ -62,13 +61,12 @@ public class UserApplicationTest {
             // given
             UserJoinRequest request = UserJoinRequest.of("test@example.com", "홍길동", "!@toto1234", "!@toto1234");
 
-            given(userService.existsByEmail(request.getEmail())).willReturn(true);
+            doThrow(new DuplicateEmailException(request.getEmail()))
+                    .when(userService)
+                    .join(any(User.class));
 
             // when & then
             assertThrows(DuplicateEmailException.class, () -> userApplication.join(request));
-
-            verify(userService, times(1)).existsByEmail(request.getEmail());
-            verify(userService, never()).join(any(User.class));
         }
     }
 }

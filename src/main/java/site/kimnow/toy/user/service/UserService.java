@@ -28,10 +28,4 @@ public class UserService {
             throw new DuplicateEmailException(user.getEmail());
         }
     }
-
-    @Transactional(readOnly = true)
-    public boolean existsByEmail(String email) {
-        return userRepositoryAdapter.existsByEmail(email);
-    }
-
 }
