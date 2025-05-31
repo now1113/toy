@@ -1,4 +1,4 @@
-package site.kimnow.toy.user.endpoint;
+package site.kimnow.toy.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -11,10 +11,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import site.kimnow.toy.jwt.util.JwtTokenUtil;
 import site.kimnow.toy.user.application.UserApplication;
+import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.dto.request.UserJoinRequest;
 import site.kimnow.toy.user.dto.response.UserJoinResponse;
 import site.kimnow.toy.user.exception.DuplicateEmailException;
+import site.kimnow.toy.user.mapper.UserMapper;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -22,14 +25,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @DisplayName("UserEndpoint 테스트")
-@WebMvcTest(UserEndpoint.class)
-@AutoConfigureMockMvc
-public class UserEndpointTest {
+@WebMvcTest(UserController.class)
+@AutoConfigureMockMvc(addFilters = false)
+public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
     @MockitoBean
     private UserApplication userApplication;
+    @MockitoBean
+    private JwtTokenUtil jwtTokenUtil;
     private final ObjectMapper om = new ObjectMapper();
 
     @Nested
@@ -41,17 +46,18 @@ public class UserEndpointTest {
         void joinSuccess() throws Exception {
             // given
             UserJoinRequest request = UserJoinRequest.of("test@example.com", "홍길동", "!@toto1234", "!@toto1234");
-            UserJoinResponse response = UserJoinResponse.from(request.getName());
+            User user = User.create(request.getEmail(), request.getName(), request.getPassword());
+            UserJoinResponse response = UserJoinResponse.from(user);
 
             given(userApplication.join(any(UserJoinRequest.class))).willReturn(response);
 
             // when & then
-            mockMvc.perform(MockMvcRequestBuilders.post("/api/user/v1/join")
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(om.writeValueAsString(request)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.name").value("홍길동"))
-                    .andExpect(jsonPath("$.message").value("홍길동님 회원가입을 환영합니다."));
+                    .andExpect(jsonPath("$.data.email").value("test@example.com"));
         }
 
     }
@@ -70,7 +76,7 @@ public class UserEndpointTest {
                     .willThrow(new DuplicateEmailException(request.getEmail()));
 
             // when & then
-            mockMvc.perform(MockMvcRequestBuilders.post("/api/user/v1/join")
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(om.writeValueAsString(request)))
                     .andExpect(status().isConflict())

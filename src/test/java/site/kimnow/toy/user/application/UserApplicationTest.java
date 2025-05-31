@@ -45,7 +45,7 @@ public class UserApplicationTest {
             UserJoinResponse response = userApplication.join(request);
 
             // then
-            assertEquals("홍길동", response.name());
+            assertEquals("홍길동", response.getName());
 
             verify(userService, times(1)).existsByEmail(request.getEmail());
             verify(userService, times(1)).join(any(User.class));
