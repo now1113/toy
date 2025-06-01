@@ -3,7 +3,6 @@ package site.kimnow.toy.user.domain;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import site.kimnow.toy.common.util.RandomIdGenerator;
-import site.kimnow.toy.user.entity.UserEntity;
 import site.kimnow.toy.user.enums.UserAuthority;
 
 import java.time.LocalDateTime;
@@ -19,7 +18,7 @@ public class User {
     private String name;
     private String password;
     private String authority;
-    private boolean isDeleted;
+    private boolean deleted;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 
@@ -33,7 +32,7 @@ public class User {
                 .name(this.name)
                 .password(encodedPassword)
                 .authority(this.authority)
-                .isDeleted(this.isDeleted)
+                .deleted(this.deleted)
                 .createTime(this.createTime)
                 .modifyTime(this.modifyTime)
                 .build();
@@ -53,7 +52,7 @@ public class User {
                 .name(name)
                 .password(password)
                 .authority(UserAuthority.ROLE_USER.getInfo())
-                .isDeleted(false)
+                .deleted(false)
                 .createTime(LocalDateTime.now())
                 .modifyTime(LocalDateTime.now())
                 .build();

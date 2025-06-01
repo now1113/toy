@@ -16,10 +16,11 @@ import java.util.Optional;
 public class UserRepositoryAdapter implements UserRepository{
 
     private final UserJpaRepository userJpaRepository;
+    private final UserMapper userMapper;
 
     @Override
     public void save(User user) {
-        UserEntity entity = UserMapper.toEntity(user);
+        UserEntity entity = userMapper.toEntity(user);
         userJpaRepository.save(entity);
     }
 
@@ -39,6 +40,6 @@ public class UserRepositoryAdapter implements UserRepository{
 
         UserEntity userEntity = entity.get();
 
-        return UserMapper.toDomain(userEntity);
+        return userMapper.toDomain(userEntity);
     }
 }

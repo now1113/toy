@@ -17,7 +17,6 @@ import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.dto.request.UserJoinRequest;
 import site.kimnow.toy.user.dto.response.UserJoinResponse;
 import site.kimnow.toy.user.exception.DuplicateEmailException;
-import site.kimnow.toy.user.mapper.UserMapper;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
