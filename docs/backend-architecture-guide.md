@@ -44,10 +44,13 @@ public User withEncodedPassword(String encodedPassword) {
 
 ## 4. Mapper 사용 규칙
 
-- DTO ↔ Domain, Entity ↔ Domain 변환은 모두 `Mapper`에서 수행
-- Mapper는 상태 없는 `static` 메서드만 사용 (Spring Bean으로 등록하지 않음)
-- Mapper는 Application Layer뿐만 아니라 RepositoryAdapter 등 외부 계층에서 도메인을 안전하게 변환하기 위해 사용된다.
-- Mapper는 Domain ↔ DTO, Domain ↔ Entity 간 변환을 모두 담당하되, Domain은 외부 객체에 직접적으로 의존하지 않는다. 즉, 변환은 가능하되, 의존은 단방향이다.
+- DTO ↔ Domain, Entity ↔ Domain 변환은 모두 `Mapper`에서 수행한다.
+- Mapper는 **MapStruct**를 사용하여 자동 생성한다.
+- @Mapper(componentModel = "spring")으로 등록해 Spring Bean으로 주입하여 사용한다.
+  Mapper는 Application Layer뿐만 아니라 RepositoryAdapter 등 외부 계층에서도 Entity ↔ Domain 변환을 안전하게 수행하기 위해 사용된다.
+- Domain은 외부 객체(Entity, DTO)를 직접 알지 않으며, 변환 책임은 Mapper가 갖는다.
+- MapStruct 사용 시 명시적으로 unmapped 필드는 @Mapping(ignore = true)로 처리하고, 자동 매핑 가능한 필드는 최대한 활용하여 boilerplate 코드를 줄인다.
+- 불변성 및 계층 분리를 해치지 않는 선에서 MapStruct를 활용하여 유지보수성과 생산성을 높인다.
 
 ## 5. Response 처리 원칙
 
@@ -97,7 +100,7 @@ src/main/java/...
 - 공통 에러는 `CommonErrorCode`, 도메인별 에러는 `{Domain}ErrorCode`등으로 분리한다.
 - 예외 응답은 `GlobalExceptionHanlder`에서 통일된 형식으로 처리한다.
 
-## 예외 구성 구조
+### 예외 구성 구조
 
 ```text
 exception
@@ -112,7 +115,7 @@ exception
 ```
 
 
-## ErrorCode 인터페이스
+### ErrorCode 인터페이스
 
 ```java
 public interface ErrorCode extends Serializable {
@@ -125,7 +128,7 @@ public interface ErrorCode extends Serializable {
 }
 ```
 
-## 공통 에러 코드 예시
+### 공통 에러 코드 예시
 
 ```java
 @Getter
@@ -136,7 +139,7 @@ public enum CommonErrorCode implements ErrorCode {
 }
 ```
 
-## 비즈니스 예외 베이스 클래스
+### 비즈니스 예외 베이스 클래스
 
 ```java
 public class BusinessException extends RuntimeException {
@@ -158,7 +161,7 @@ public class BusinessException extends RuntimeException {
 }
 ```
 
-## 도메인별 예외 정의 예시 (User)
+### 도메인별 예외 정의 예시 (User)
 
 ```java
 @Getter
@@ -183,7 +186,7 @@ public class DuplicateEmailException extends BusinessException {
 }
 ```
 
-## GlobalExceptionHandler 예시
+### GlobalExceptionHandler 예시
 
 ```java
 @Slf4j

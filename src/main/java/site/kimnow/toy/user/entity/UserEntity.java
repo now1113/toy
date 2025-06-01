@@ -5,11 +5,10 @@ import lombok.*;
 import site.kimnow.toy.common.entity.BaseTimeEntity;
 
 
-@Builder
 @Entity
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name= "user", uniqueConstraints = {
         @UniqueConstraint(name = "uk_user_email", columnNames = "email")
 })
@@ -23,5 +22,5 @@ public class UserEntity extends BaseTimeEntity {
     private String name;
     private String password;
     private String authority;
-    private boolean isDeleted;
+    private boolean deleted;
 }
