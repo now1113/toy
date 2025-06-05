@@ -19,7 +19,9 @@ public class UserService {
     @Transactional
     public void join(User user) {
         validateUser(user);
-        User encodedUser = user.encodePassword(passwordEncoder);
+
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        User encodedUser = user.withEncodedPassword(encodedPassword);
         userRepositoryAdapter.save(encodedUser);
     }
 
