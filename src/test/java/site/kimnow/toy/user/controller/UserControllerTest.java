@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import site.kimnow.toy.jwt.util.JwtTokenUtil;
+import site.kimnow.toy.jwt.util.JwtTokenProvider;
 import site.kimnow.toy.user.application.UserApplication;
 import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.dto.request.UserJoinRequest;
@@ -23,7 +23,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@DisplayName("UserEndpoint 테스트")
+@DisplayName("UserController 테스트")
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class UserControllerTest {
@@ -33,7 +33,7 @@ public class UserControllerTest {
     @MockitoBean
     private UserApplication userApplication;
     @MockitoBean
-    private JwtTokenUtil jwtTokenUtil;
+    private JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper om = new ObjectMapper();
 
     @Nested

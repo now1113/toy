@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import site.kimnow.toy.user.domain.User;
-import site.kimnow.toy.user.dto.request.LoginUser;
 import site.kimnow.toy.user.dto.request.UserJoinRequest;
 import site.kimnow.toy.user.dto.response.UserJoinResponse;
 import site.kimnow.toy.user.service.UserService;

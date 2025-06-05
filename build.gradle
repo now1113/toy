@@ -9,6 +9,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.5'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
 
 group = 'site.kimnow'
@@ -62,6 +63,8 @@ dependencies {
 	// mapstruct
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+	testImplementation("com.h2database:h2")
 }
 
 def querydslDir = 'src/main/generated'
@@ -80,4 +83,16 @@ test {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport // 테스트 후 리포트 자동 생성
+}
+
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required.set(true)     // XML 보고서 생성 (CI 연동용)
+		csv.required.set(false)    // CSV
+		html.required.set(true)    // HTML 리포트 생성 (브라우저에서 열 수 있음)
+		html.outputLocation.set(layout.buildDirectory.dir('jacocoHtml'))
+	}
 }

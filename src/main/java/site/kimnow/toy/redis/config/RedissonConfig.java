@@ -1,4 +1,4 @@
-package site.kimnow.toy.jwt.config;
+package site.kimnow.toy.redis.config;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -30,7 +30,6 @@ public class RedissonConfig {
                 .setConnectTimeout(10000)
                 .setTimeout(3000);
 
-        // 직렬화 방식 설정
         config.setCodec(new StringCodec());
 
         return Redisson.create(config);

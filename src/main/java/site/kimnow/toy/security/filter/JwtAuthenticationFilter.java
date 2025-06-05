@@ -14,7 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import site.kimnow.toy.jwt.util.JwtTokenUtil;
+import site.kimnow.toy.jwt.util.JwtTokenProvider;
 import site.kimnow.toy.user.dto.request.LoginUser;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ import static site.kimnow.toy.common.constant.Constants.ACCESS_TOKEN;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      *  JWT 토큰을 Cookie에서 추출하여 검증. 유효하면 request에 사용자 정보 설정
@@ -39,9 +39,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = extractTokenFromCookie(request);
         try {
-            if (token != null && jwtTokenUtil.validateToken(token)) {
-                String userId = jwtTokenUtil.getUserId(token);
-                String role = jwtTokenUtil.getRole(token);
+            if (token != null && jwtTokenProvider.validateToken(token)) {
+                String userId = jwtTokenProvider.getUserId(token);
+                String role = jwtTokenProvider.getRole(token);
 
                 LoginUser loginUser = LoginUser.of(userId, role);
 
