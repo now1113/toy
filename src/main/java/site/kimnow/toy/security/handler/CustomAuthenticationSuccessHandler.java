@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 import site.kimnow.toy.common.response.CommonResponse;
 import site.kimnow.toy.jwt.util.JwtProperties;
-import site.kimnow.toy.jwt.util.JwtTokenUtil;
+import site.kimnow.toy.jwt.util.JwtTokenProvider;
 import site.kimnow.toy.redis.service.TokenRedisService;
 import site.kimnow.toy.redis.service.UserRoleRedisService;
 import site.kimnow.toy.security.vo.UserPrincipal;
@@ -27,7 +27,7 @@ import static site.kimnow.toy.common.constant.Constants.*;
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenProvider jwtTokenProvider;
     private final JwtProperties jwtProperties;
     private final TokenRedisService tokenRedisService;
     private final UserRoleRedisService userRoleRedisService;
@@ -40,8 +40,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         String userId = userPrincipal.getUsername();
         String authority = userPrincipal.getAuthority();
 
-        String accessToken = jwtTokenUtil.createAccessToken(userId, authority);
-        String refreshToken = jwtTokenUtil.createRefreshToken(userId);
+        String accessToken = jwtTokenProvider.createAccessToken(userId, authority);
+        String refreshToken = jwtTokenProvider.createRefreshToken(userId);
         addTokens(accessToken, refreshToken, response);
 
         tokenRedisService.save(userId, refreshToken, Duration.ofDays(14));

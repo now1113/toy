@@ -9,14 +9,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import site.kimnow.toy.auth.exception.AuthErrorCode;
 import site.kimnow.toy.jwt.util.JwtProperties;
-import site.kimnow.toy.jwt.util.JwtTokenUtil;
+import site.kimnow.toy.jwt.util.JwtTokenProvider;
 import site.kimnow.toy.redis.service.TokenRedisService;
 import site.kimnow.toy.redis.service.UserRoleRedisService;
 import site.kimnow.toy.user.exception.UnauthorizedException;
 
 import java.time.Duration;
 
-import static site.kimnow.toy.auth.exception.AuthErrorCode.REFRESH_TOKEN_INVALID;
 import static site.kimnow.toy.auth.exception.AuthErrorCode.REFRESH_TOKEN_NOT_FOUND;
 import static site.kimnow.toy.common.constant.Constants.ACCESS_TOKEN;
 import static site.kimnow.toy.common.constant.Constants.REFRESH_TOKEN;
@@ -26,7 +25,7 @@ import static site.kimnow.toy.common.constant.Constants.REFRESH_TOKEN;
 @RequiredArgsConstructor
 public class AuthApplication {
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenProvider jwtTokenProvider;
     private final JwtProperties jwtProperties;
     private final TokenRedisService tokenRedisService;
     private final UserRoleRedisService userRoleRedisService;
@@ -47,8 +46,8 @@ public class AuthApplication {
     }
 
     private void generateAndAttachCookies(HttpServletResponse response, String userId, String role) {
-        String newAccessToken = jwtTokenUtil.createAccessToken(userId, role);
-        String newRefreshToken = jwtTokenUtil.createRefreshToken(userId);
+        String newAccessToken = jwtTokenProvider.createAccessToken(userId, role);
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(userId);
 
         tokenRedisService.save(userId, newRefreshToken, Duration.ofDays(14));
 
@@ -84,7 +83,7 @@ public class AuthApplication {
     public void logout(String refreshToken, HttpServletResponse response) {
         validateRefreshToken(refreshToken);
 
-        String userId = jwtTokenUtil.getUserId(refreshToken);
+        String userId = jwtTokenProvider.getUserId(refreshToken);
         tokenRedisService.delete(userId);
 
         // 쿠키 만료
@@ -104,7 +103,7 @@ public class AuthApplication {
     }
 
     private void validateRefreshToken(String refreshToken) {
-        if (!StringUtils.hasText(refreshToken) || !jwtTokenUtil.validateToken(refreshToken)) {
+        if (!StringUtils.hasText(refreshToken) || !jwtTokenProvider.validateToken(refreshToken)) {
             throw new UnauthorizedException(AuthErrorCode.REFRESH_TOKEN_INVALID);
         }
     }

@@ -13,7 +13,7 @@ import java.util.Date;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtTokenUtil {
+public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
     private static final String ROLE = "role";
