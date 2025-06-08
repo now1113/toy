@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import static site.kimnow.toy.common.constant.Constants.LOGIN_URL;
 
+
 public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final ObjectMapper om = new ObjectMapper();
 

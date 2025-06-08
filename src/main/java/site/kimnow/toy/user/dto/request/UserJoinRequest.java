@@ -11,7 +11,7 @@ import site.kimnow.toy.common.validate.annotation.PasswordMatch;
 
 @Getter
 @PasswordMatch
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserJoinRequest {
 

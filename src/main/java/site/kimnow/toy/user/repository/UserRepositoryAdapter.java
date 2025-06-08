@@ -30,7 +30,7 @@ public class UserRepositoryAdapter implements UserRepository{
     }
 
     @Override
-    public User findByUserId(String email) {
+    public User findByEmail(String email) {
         Optional<UserEntity> entity = userJpaRepository.findByEmail(email);
 
         if (entity.isEmpty()) {
