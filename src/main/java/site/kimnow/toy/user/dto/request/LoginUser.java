@@ -4,7 +4,7 @@ import lombok.*;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoginUser {
     private String userId;

@@ -9,7 +9,7 @@ import site.kimnow.toy.common.entity.BaseTimeEntity;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name= "user", uniqueConstraints = {
+@Table(name= "users", uniqueConstraints = {
         @UniqueConstraint(name = "uk_user_email", columnNames = "email")
 })
 public class UserEntity extends BaseTimeEntity {

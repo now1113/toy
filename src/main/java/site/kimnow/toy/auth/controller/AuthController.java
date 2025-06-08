@@ -1,4 +1,4 @@
-package site.kimnow.toy.auth.endpoint;
+package site.kimnow.toy.auth.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import static site.kimnow.toy.common.constant.Constants.REFRESH_TOKEN;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
-public class AuthEndpoint {
+public class AuthController {
 
     private final AuthApplication authApplication;
 
@@ -27,7 +27,7 @@ public class AuthEndpoint {
             HttpServletResponse response) {
 
         authApplication.reissue(refreshToken, response);
-        return ResponseEntity.ok(CommonResponse.success("토큰 재발급 성공"));
+        return ResponseEntity.ok(CommonResponse.success(null,"토큰 재발급 성공"));
     }
 
     @PostMapping("/logout")
@@ -36,6 +36,6 @@ public class AuthEndpoint {
             HttpServletResponse response
     ) {
         authApplication.logout(refreshToken, response);
-        return ResponseEntity.ok(CommonResponse.success("로그아웃 되었습니다."));
+        return ResponseEntity.ok(CommonResponse.success(null,"로그아웃 되었습니다."));
     }
 }

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User {
 
@@ -22,9 +22,6 @@ public class User {
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 
-    /**
-     * 암호화된 비밀번호로 새로운 유저 인스턴스를 반환
-     */
     public User withEncodedPassword(String encodedPassword) {
         return User.builder()
                 .userId(this.userId)
@@ -38,13 +35,6 @@ public class User {
                 .build();
     }
 
-    public User encodePassword(PasswordEncoder encoder) {
-        return this.withEncodedPassword(encoder.encode(this.password));
-    }
-
-    /**
-     * 사용자 생성 규칙을 도메인에 숨긴 정적 팩토리 메서드
-     */
     public static User create(String email, String name, String password) {
         return User.builder()
                 .userId(RandomIdGenerator.generate())
