@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import site.kimnow.toy.user.command.JoinUserCommand;
 import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.dto.request.UserJoinRequest;
 import site.kimnow.toy.user.dto.response.UserJoinResponse;
@@ -36,11 +37,12 @@ public class UserApplicationTest {
         void join_shouldReturnUserJoinResponse() {
             // given
             UserJoinRequest request = UserJoinRequest.of("test@example.com", "홍길동", "!@toto1234", "!@toto1234");
+            JoinUserCommand command = request.toCommand();
 
             doNothing().when(userService).join(any(User.class));
 
             // when
-            UserJoinResponse response = userApplication.join(request);
+            UserJoinResponse response = userApplication.join(command);
 
             // then
             assertEquals("홍길동", response.getName());
@@ -58,13 +60,14 @@ public class UserApplicationTest {
         void join_shouldThrowDuplicateEmailException() {
             // given
             UserJoinRequest request = UserJoinRequest.of("test@example.com", "홍길동", "!@toto1234", "!@toto1234");
+            JoinUserCommand command = request.toCommand();
 
             doThrow(new DuplicateEmailException(request.getEmail()))
                     .when(userService)
                     .join(any(User.class));
 
             // when & then
-            assertThrows(DuplicateEmailException.class, () -> userApplication.join(request));
+            assertThrows(DuplicateEmailException.class, () -> userApplication.join(command));
         }
     }
 }
