@@ -1,4 +1,4 @@
-package site.kimnow.toy.jwt.util;
+package site.kimnow.toy.jwt.provider;
 
 import io.jsonwebtoken.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import site.kimnow.toy.common.properties.JwtProperties;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

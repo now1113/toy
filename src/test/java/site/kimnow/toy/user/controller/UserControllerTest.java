@@ -11,8 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import site.kimnow.toy.jwt.util.JwtTokenProvider;
+import site.kimnow.toy.jwt.provider.JwtTokenProvider;
 import site.kimnow.toy.user.application.UserApplication;
+import site.kimnow.toy.user.command.JoinUserCommand;
 import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.dto.request.UserJoinRequest;
 import site.kimnow.toy.user.dto.response.UserJoinResponse;
@@ -48,7 +49,7 @@ public class UserControllerTest {
             User user = User.create(request.getEmail(), request.getName(), request.getPassword());
             UserJoinResponse response = UserJoinResponse.from(user);
 
-            given(userApplication.join(any(UserJoinRequest.class))).willReturn(response);
+            given(userApplication.join(any(JoinUserCommand.class))).willReturn(response);
 
             // when & then
             mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
@@ -71,7 +72,7 @@ public class UserControllerTest {
             // given
             UserJoinRequest request = UserJoinRequest.of("test@example.com", "홍길동", "!@toto1234", "!@toto1234");
 
-            given(userApplication.join(any(UserJoinRequest.class)))
+            given(userApplication.join(any(JoinUserCommand.class)))
                     .willThrow(new DuplicateEmailException(request.getEmail()));
 
             // when & then

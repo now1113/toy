@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<CommonResponse<UserJoinResponse>> join(@RequestBody @Valid UserJoinRequest dto) {
-        UserJoinResponse response = userApplication.join(dto);
+        UserJoinResponse response = userApplication.join(dto.toCommand());
         return ResponseUtil.ok(response);
     }
 

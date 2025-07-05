@@ -29,7 +29,8 @@ public class PermitAllUrl {
     private static final RequestMatcher[] AUTH = {
             new AntPathRequestMatcher("/api/v1/auth/login", "POST"),
             new AntPathRequestMatcher("/api/v1/auth/reissue", "POST"),
-            new AntPathRequestMatcher("/api/v1/users", "POST")
+            new AntPathRequestMatcher("/api/v1/users", "POST"),
+            new AntPathRequestMatcher("/api/v1/auth/verify", "GET")
     };
 
 }

@@ -1,10 +1,11 @@
-package site.kimnow.toy.jwt.util;
+package site.kimnow.toy.jwt.provider;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import site.kimnow.toy.common.properties.JwtProperties;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;

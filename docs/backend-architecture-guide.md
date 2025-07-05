@@ -12,8 +12,8 @@
 
 ```text
 Controller → Application → Domain → Repository
-                   ↓             ↕
-               Mapper (DTO ↔ Domain ↔ Entity)
+     ↓             ↓             ↕
+    DTO         Command       Entity
 ```
 
 - **Controller**: 외부 요청 수신 및 응답 Wrapping
@@ -22,7 +22,7 @@ Controller → Application → Domain → Repository
 - **Domain**: 비즈니스 로직을 담당하는 순수 객체
 - **Entity**: DB 매핑 전용 객체
 - **Repository**: JPA 인터페이스 및 어댑터 구성
-- **Mapper**: DTO ↔ Domain, Domain ↔ Entity 간 변환 담당
+- **Mapper**: Domain ↔ Entity 간의 변환을 담당. (필요시 Application 계층에서도 사용)
 
 ## 3. 도메인 객체 불변성 유지
 
@@ -42,15 +42,19 @@ public User withEncodedPassword(String encodedPassword) {
 }
 ```
 
-## 4. Mapper 사용 규칙
+## 4. 객체 변환 규칙
 
-- DTO ↔ Domain, Entity ↔ Domain 변환은 모두 `Mapper`에서 수행한다.
-- Mapper는 **MapStruct**를 사용하여 자동 생성한다.
-- @Mapper(componentModel = "spring")으로 등록해 Spring Bean으로 주입하여 사용한다.
-  Mapper는 Application Layer뿐만 아니라 RepositoryAdapter 등 외부 계층에서도 Entity ↔ Domain 변환을 안전하게 수행하기 위해 사용된다.
-- Domain은 외부 객체(Entity, DTO)를 직접 알지 않으며, 변환 책임은 Mapper가 갖는다.
-- MapStruct 사용 시 명시적으로 unmapped 필드는 @Mapping(ignore = true)로 처리하고, 자동 매핑 가능한 필드는 최대한 활용하여 boilerplate 코드를 줄인다.
-- 불변성 및 계층 분리를 해치지 않는 선에서 MapStruct를 활용하여 유지보수성과 생산성을 높인다.
+### DTO, Command, Domain 간의 변환
+
+- **DTO → Command**: 외부 요청을 애플리케이션의 의도로 변환하는 과정입니다. DTO 내부에 `toCommand()` 메서드를 구현하여 변환 책임을 DTO가 갖습니다. 이는 의존성 규칙(외부→내부)을 위반하지 않습니다.
+- **Command → Domain**: Application 계층에서 Command 객체를 사용하여 Domain 객체를 생성합니다. `User.create(command)`와 같이 Domain 객체의 정적 팩토리 메서드나 생성자를 사용합니다.
+- **Domain → DTO**: Application 계층에서 로직 처리 후, 결과를 외부로 전달하기 위해 Domain 객체를 DTO로 변환합니다. `ResponseDto.from(domain)`과 같이 DTO의 정적 팩토리 메서드를 사용합니다.
+
+### Domain ↔ Entity 변환 (Mapper 사용)
+
+- `Domain ↔ Entity` 간의 변환은 영속성 계층과의 분리를 위해 **Mapper**에서 수행합니다.
+- Mapper는 **MapStruct**를 사용하여 boilerplate 코드를 줄이고, `@Mapper(componentModel = "spring")`으로 등록해 Spring Bean으로 주입하여 사용합니다.
+- Mapper는 RepositoryAdapter 등 영속성 계층에서 주로 사용됩니다.
 
 ## 5. Response 처리 원칙
 
@@ -68,7 +72,7 @@ public ResponseEntity<CommonResponse<UserJoinResponse>> join(...) {
 
 ## 6. 디렉토리 구성
 
-```java
+```text
 src/main/java/...
 ├── application         // 유스케이스 흐름 조율
 ├── controller          // REST API endpoint
@@ -77,7 +81,7 @@ src/main/java/...
 ├── entity              // JPA Entity (e.g. UserEntity.java)
 ├── enums               // Enum 타입들 (권한, 상태 등)
 ├── exception           // 비즈니스 예외 정의
-├── mapper              // DTO ↔ Domain ↔ Entity 변환
+├── mapper              // Domain ↔ Entity 변환
 ├── repository          // Repository interface 및 Adapter
 ├── service             // 도메인 로직 수행
 ```

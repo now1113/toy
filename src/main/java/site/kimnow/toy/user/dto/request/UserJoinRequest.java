@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.kimnow.toy.common.validate.annotation.Password;
 import site.kimnow.toy.common.validate.annotation.PasswordMatch;
+import site.kimnow.toy.user.command.JoinUserCommand;
 
 @Getter
 @PasswordMatch
@@ -28,6 +29,14 @@ public class UserJoinRequest {
 
     @NotBlank
     private String confirmPassword;
+
+    public JoinUserCommand toCommand() {
+        return JoinUserCommand.builder()
+                .email(this.email)
+                .password(this.password)
+                .name(this.name)
+                .build();
+    }
 
     public static UserJoinRequest of(String email, String name, String password, String confirmPassword) {
         return new UserJoinRequest(email, name, password, confirmPassword);

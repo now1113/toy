@@ -50,9 +50,9 @@ jwt:
   refresh-token-expiration-mills: ${JWT_REFRESH_EXPIRATION}
 
 mail:
-  verification-url-prefix: http://localhost:8080/api/v1/auth/verify?token=
+  verification-url-prefix: https://toy.kimnow.site/api/v1/auth/verify?token=
 
 auth:
   redirect-url:
-    success: http://localhost:8080/login
-    fail: http://localhost:8080/verify-failed
+    success: https://toy.kimnow.site/login
+    fail: https://toy.kimnow.site/verify-failed

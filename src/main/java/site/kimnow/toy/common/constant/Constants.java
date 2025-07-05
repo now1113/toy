@@ -11,4 +11,6 @@ public class Constants {
     public static final String REDIS_USER_ROLE_PREFIX = "userRole:";
     public static final String DEFAULT_SAME_SITE = "Lax";
     public static final String LOGIN_URL = "/api/v1/auth/login";
+
+    public static final String EMAIL_TITLE = "[TOY] 이메일 인증 요청";
 }

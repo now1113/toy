@@ -14,7 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import site.kimnow.toy.jwt.util.JwtTokenProvider;
+import site.kimnow.toy.jwt.provider.JwtTokenProvider;
 import site.kimnow.toy.user.dto.request.LoginUser;
 
 import java.io.IOException;

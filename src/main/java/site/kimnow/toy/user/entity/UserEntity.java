@@ -22,5 +22,6 @@ public class UserEntity extends BaseTimeEntity {
     private String name;
     private String password;
     private String authority;
+    private String status;
     private boolean deleted;
 }
