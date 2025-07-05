@@ -16,7 +16,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import site.kimnow.toy.jwt.util.JwtTokenProvider;
+import site.kimnow.toy.jwt.provider.JwtTokenProvider;
 import site.kimnow.toy.user.dto.request.LoginUser;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

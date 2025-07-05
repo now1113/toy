@@ -7,12 +7,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import site.kimnow.toy.auth.command.VerifyEmailCommand;
 import site.kimnow.toy.auth.exception.AuthErrorCode;
-import site.kimnow.toy.jwt.util.JwtProperties;
-import site.kimnow.toy.jwt.util.JwtTokenProvider;
+import site.kimnow.toy.common.properties.JwtProperties;
+import site.kimnow.toy.jwt.provider.JwtTokenProvider;
 import site.kimnow.toy.redis.service.TokenRedisService;
 import site.kimnow.toy.redis.service.UserRoleRedisService;
+import site.kimnow.toy.user.domain.UserVerification;
 import site.kimnow.toy.user.exception.UnauthorizedException;
+import site.kimnow.toy.user.service.UserService;
+import site.kimnow.toy.user.service.UserVerificationService;
 
 import java.time.Duration;
 
@@ -29,6 +33,8 @@ public class AuthApplication {
     private final JwtProperties jwtProperties;
     private final TokenRedisService tokenRedisService;
     private final UserRoleRedisService userRoleRedisService;
+    private final UserService userService;
+    private final UserVerificationService userVerificationService;
 
     public void reissue(String refreshToken, HttpServletResponse response) {
         validateRefreshToken(refreshToken);
@@ -107,4 +113,13 @@ public class AuthApplication {
             throw new UnauthorizedException(AuthErrorCode.REFRESH_TOKEN_INVALID);
         }
     }
+
+    public void verify(VerifyEmailCommand command) {
+        UserVerification userVerification = userVerificationService.findByToken(command.getToken());
+        userService.verify(userVerification);
+
+        userVerificationService.delete(userVerification);
+    }
+
+
 }

@@ -21,7 +21,7 @@ public class AsyncConfig {
         // 기본 쓰레드 수
         executor.setCorePoolSize(processors);
         // 최대 쓰레드 수
-        executor.setMaxPoolSize(processors);
+        executor.setMaxPoolSize(processors * 2);
         // 대기 큐 크기
         executor.setQueueCapacity(50);
         // 쓰레드 이름 접두사

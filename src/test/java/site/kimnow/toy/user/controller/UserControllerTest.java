@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import site.kimnow.toy.jwt.util.JwtTokenProvider;
+import site.kimnow.toy.jwt.provider.JwtTokenProvider;
 import site.kimnow.toy.user.application.UserApplication;
 import site.kimnow.toy.user.command.JoinUserCommand;
 import site.kimnow.toy.user.domain.User;

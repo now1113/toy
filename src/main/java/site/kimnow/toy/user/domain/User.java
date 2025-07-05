@@ -1,9 +1,9 @@
 package site.kimnow.toy.user.domain;
 
 import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import site.kimnow.toy.common.util.RandomIdGenerator;
 import site.kimnow.toy.user.enums.UserAuthority;
+import site.kimnow.toy.user.enums.UserStatus;
 
 import java.time.LocalDateTime;
 
@@ -13,11 +13,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User {
 
+    private Long idx;
     private String userId;
     private String email;
     private String name;
     private String password;
     private String authority;
+    private String status;
     private boolean deleted;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
@@ -29,6 +31,7 @@ public class User {
                 .name(this.name)
                 .password(encodedPassword)
                 .authority(this.authority)
+                .status(this.status)
                 .deleted(this.deleted)
                 .createTime(this.createTime)
                 .modifyTime(this.modifyTime)
@@ -42,9 +45,14 @@ public class User {
                 .name(name)
                 .password(password)
                 .authority(UserAuthority.ROLE_USER.getInfo())
+                .status(UserStatus.PENDING_EMAIL_VERIFICATION.getStatus())
                 .deleted(false)
                 .createTime(LocalDateTime.now())
                 .modifyTime(LocalDateTime.now())
                 .build();
+    }
+
+    public void completeEmailVerification() {
+        this.status = UserStatus.EMAIL_VERIFIED.getStatus();
     }
 }
