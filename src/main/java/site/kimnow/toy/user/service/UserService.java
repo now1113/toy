@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.domain.UserVerification;
 import site.kimnow.toy.user.exception.DuplicateEmailException;
-import site.kimnow.toy.user.repository.UserRepositoryAdapter;
+import site.kimnow.toy.user.repository.user.UserRepositoryAdapter;
 
 @Slf4j
 @Service

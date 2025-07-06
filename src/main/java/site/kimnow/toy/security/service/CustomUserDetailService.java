@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import site.kimnow.toy.security.vo.UserPrincipal;
 import site.kimnow.toy.user.domain.User;
-import site.kimnow.toy.user.repository.UserRepositoryAdapter;
+import site.kimnow.toy.user.repository.user.UserRepositoryAdapter;
 
 @Slf4j
 @Service

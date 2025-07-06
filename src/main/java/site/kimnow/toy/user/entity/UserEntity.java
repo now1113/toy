@@ -9,9 +9,10 @@ import site.kimnow.toy.common.entity.BaseTimeEntity;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name= "users", uniqueConstraints = {
-        @UniqueConstraint(name = "uk_user_email", columnNames = "email")
-})
+@Table(name= "users", indexes = {
+        @Index(name = "ux_active_email", columnList = "active_email", unique = true)
+    }
+)
 public class UserEntity extends BaseTimeEntity {
 
     @Id
@@ -19,6 +20,13 @@ public class UserEntity extends BaseTimeEntity {
     private Long idx;
     private String userId;
     private String email;
+    @Column(
+            name = "active_email",
+            insertable = false,
+            updatable = false,
+            columnDefinition = "VARCHAR(255) GENERATED ALWAYS AS (CASE WHEN deleted = 0 THEN email ELSE NULL END) STORED"
+    )
+    private String activeEmail;
     private String name;
     private String password;
     private String authority;

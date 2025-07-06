@@ -1,4 +1,4 @@
-package site.kimnow.toy.user.repository;
+package site.kimnow.toy.user.repository.verification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

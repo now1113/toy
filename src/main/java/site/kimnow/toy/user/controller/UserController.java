@@ -25,4 +25,9 @@ public class UserController {
         return ResponseUtil.ok(response);
     }
 
+    @GetMapping
+    public ResponseEntity<CommonResponse<UserJoinResponse>> list() {
+        return null;
+    }
+
 }

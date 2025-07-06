@@ -11,6 +11,8 @@ import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.enums.UserAuthority;
 import site.kimnow.toy.user.exception.UserNotFoundException;
 import site.kimnow.toy.user.mapper.UserMapperImpl;
+import site.kimnow.toy.user.repository.user.UserJpaRepository;
+import site.kimnow.toy.user.repository.user.UserRepositoryAdapter;
 
 import java.time.LocalDateTime;
 

@@ -9,7 +9,7 @@ import site.kimnow.toy.common.properties.SmtpMailProperties;
 import site.kimnow.toy.common.mail.sender.EmailSender;
 import site.kimnow.toy.user.domain.UserVerification;
 import site.kimnow.toy.user.event.UserJoinedEvent;
-import site.kimnow.toy.user.repository.UserVerificationRepositoryAdapter;
+import site.kimnow.toy.user.repository.verification.UserVerificationRepositoryAdapter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

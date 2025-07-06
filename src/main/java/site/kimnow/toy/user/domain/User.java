@@ -16,6 +16,7 @@ public class User {
     private Long idx;
     private String userId;
     private String email;
+    private String activeEmail;
     private String name;
     private String password;
     private String authority;

@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.exception.DuplicateEmailException;
-import site.kimnow.toy.user.repository.UserRepositoryAdapter;
+import site.kimnow.toy.user.repository.user.UserRepositoryAdapter;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;

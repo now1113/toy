@@ -1,4 +1,4 @@
-package site.kimnow.toy.user.repository;
+package site.kimnow.toy.user.repository.user;
 
 import site.kimnow.toy.user.domain.User;
 
