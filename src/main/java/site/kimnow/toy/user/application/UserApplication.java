@@ -5,10 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import site.kimnow.toy.common.response.PageResponse;
 import site.kimnow.toy.user.command.JoinUserCommand;
 import site.kimnow.toy.user.domain.User;
 import site.kimnow.toy.user.dto.response.UserJoinResponse;
+import site.kimnow.toy.user.dto.response.UserResponse;
 import site.kimnow.toy.user.event.UserJoinedEvent;
+import site.kimnow.toy.user.query.UserSearchQuery;
 import site.kimnow.toy.user.service.UserService;
 
 @Slf4j
@@ -27,5 +30,11 @@ public class UserApplication {
         eventPublisher.publishEvent(UserJoinedEvent.from(user));
 
         return UserJoinResponse.from(user);
+    }
+
+    public PageResponse<UserResponse> queryUsers(UserSearchQuery query) {
+        userService.queryUsers(query);
+
+        return null;
     }
 }

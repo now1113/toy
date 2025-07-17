@@ -31,11 +31,7 @@ public class UserJoinRequest {
     private String confirmPassword;
 
     public JoinUserCommand toCommand() {
-        return JoinUserCommand.builder()
-                .email(this.email)
-                .password(this.password)
-                .name(this.name)
-                .build();
+        return JoinUserCommand.of(this.email, this.password, this.name);
     }
 
     public static UserJoinRequest of(String email, String name, String password, String confirmPassword) {

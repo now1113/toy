@@ -6,10 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.kimnow.toy.common.response.CommonResponse;
+import site.kimnow.toy.common.response.PageResponse;
 import site.kimnow.toy.common.response.ResponseUtil;
 import site.kimnow.toy.user.application.UserApplication;
 import site.kimnow.toy.user.dto.request.UserJoinRequest;
+import site.kimnow.toy.user.dto.request.UserSearchRequest;
 import site.kimnow.toy.user.dto.response.UserJoinResponse;
+import site.kimnow.toy.user.dto.response.UserResponse;
 
 @Slf4j
 @RestController
@@ -26,7 +29,9 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<UserJoinResponse>> list() {
+    public ResponseEntity<CommonResponse<PageResponse<UserResponse>>> queryUsers(@ModelAttribute @Valid UserSearchRequest request) {
+        userApplication.queryUsers(request.toQuery());
+
         return null;
     }
 
