@@ -11,7 +11,8 @@ import site.kimnow.toy.user.domain.UserVerification;
 import site.kimnow.toy.user.dto.response.UserResponse;
 import site.kimnow.toy.user.exception.DuplicateEmailException;
 import site.kimnow.toy.user.query.UserSearchQuery;
-import site.kimnow.toy.user.repository.user.UserRepositoryAdapter;
+import site.kimnow.toy.user.repository.user.UserRepositoryImpl;
+import site.kimnow.toy.user.repository.user.v1.UserRepositoryAdapter;
 
 @Slf4j
 @Service
@@ -19,13 +20,21 @@ import site.kimnow.toy.user.repository.user.UserRepositoryAdapter;
 public class UserService {
     private final UserRepositoryAdapter userRepositoryAdapter;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepositoryImpl userRepositoryImpl;
 
     public void join(User user) {
         validateUser(user);
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         User encodedUser = user.withEncodedPassword(encodedPassword);
-        userRepositoryAdapter.save(encodedUser);
+
+        userRepositoryImpl.save(encodedUser);
+
+//        userRepositoryAdapter.save(encodedUser);
+    }
+
+    public void joinV2(User user) {
+
     }
 
     private void validateUser(User user) {
@@ -39,7 +48,7 @@ public class UserService {
         User user = userRepositoryAdapter.findByEmail(userVerification.getEmail());
         user.completeEmailVerification();
 
-        userRepositoryAdapter.save(user);
+//        userRepositoryAdapter.save(user);
     }
 
     @Transactional(readOnly = true)

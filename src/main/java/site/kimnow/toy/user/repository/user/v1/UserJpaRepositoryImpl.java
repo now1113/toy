@@ -1,4 +1,4 @@
-package site.kimnow.toy.user.repository.user;
+package site.kimnow.toy.user.repository.user.v1;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

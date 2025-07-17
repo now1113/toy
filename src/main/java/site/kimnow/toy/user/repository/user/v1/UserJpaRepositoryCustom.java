@@ -1,4 +1,4 @@
-package site.kimnow.toy.user.repository.user;
+package site.kimnow.toy.user.repository.user.v1;
 
 import site.kimnow.toy.user.entity.UserEntity;
 

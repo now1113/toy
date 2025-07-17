@@ -1,6 +1,7 @@
 package site.kimnow.toy.user.domain;
 
 import lombok.*;
+import site.kimnow.toy.common.base.domain.AggregateRoot;
 import site.kimnow.toy.common.util.RandomIdGenerator;
 import site.kimnow.toy.user.enums.UserAuthority;
 import site.kimnow.toy.user.enums.UserStatus;
@@ -11,9 +12,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class User {
+public class User extends AggregateRoot<User, UserId> {
 
-    private Long idx;
+    private UserId id;
     private String userId;
     private String email;
     private String activeEmail;
@@ -24,6 +25,11 @@ public class User {
     private boolean deleted;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
+
+    @Override
+    public UserId getId() {
+        return id;
+    }
 
     public User withEncodedPassword(String encodedPassword) {
         return User.builder()
@@ -56,4 +62,5 @@ public class User {
     public void completeEmailVerification() {
         this.status = UserStatus.EMAIL_VERIFIED.getStatus();
     }
+
 }
