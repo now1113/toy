@@ -1,4 +1,4 @@
-package site.kimnow.toy.user.repository;
+package site.kimnow.toy.user.repository.verification;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import site.kimnow.toy.user.entity.UserVerificationEntity;

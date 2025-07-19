@@ -9,7 +9,7 @@ import site.kimnow.toy.common.properties.SmtpMailProperties;
 import site.kimnow.toy.common.mail.sender.EmailSender;
 import site.kimnow.toy.user.domain.UserVerification;
 import site.kimnow.toy.user.event.UserJoinedEvent;
-import site.kimnow.toy.user.repository.UserVerificationRepositoryAdapter;
+import site.kimnow.toy.user.repository.verification.UserVerificationRepositoryImpl;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserVerificationService {
 
-    private final UserVerificationRepositoryAdapter userVerificationRepositoryAdapter;
+    private final UserVerificationRepositoryImpl userVerificationRepository;
     private final SmtpMailProperties smtpMailProperties;
     private final EmailSender emailSender;
 
@@ -30,7 +30,7 @@ public class UserVerificationService {
         LocalDateTime expireAt = LocalDateTime.now().plusHours(24);
 
         UserVerification userVerification = UserVerification.of(event.getEmail(), token, expireAt);
-        userVerificationRepositoryAdapter.save(userVerification);
+        userVerificationRepository.save(userVerification);
 
         sendVerificationEmail(userVerification.getEmail(), token);
     }
@@ -44,7 +44,7 @@ public class UserVerificationService {
 
     @Transactional(readOnly = true)
     public UserVerification findByToken(String token) {
-        UserVerification userVerification = userVerificationRepositoryAdapter.findByToken(token);
+        UserVerification userVerification = userVerificationRepository.findByToken(token);
         userVerification.validateNotExpired();
 
         return userVerification;

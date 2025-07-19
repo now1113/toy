@@ -1,6 +1,7 @@
 package site.kimnow.toy.user.domain;
 
 import lombok.*;
+import site.kimnow.toy.common.base.domain.AggregateRoot;
 import site.kimnow.toy.user.exception.UserVerificationExpiredException;
 
 import java.time.LocalDateTime;
@@ -9,9 +10,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserVerification {
+public class UserVerification extends AggregateRoot<UserVerification, UserVerificationId> {
 
-    private Long idx;
+    private UserVerificationId id;
     private String email;
     private String token;
     private LocalDateTime expireDate;
