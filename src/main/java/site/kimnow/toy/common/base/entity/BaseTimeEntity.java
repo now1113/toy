@@ -1,4 +1,4 @@
-package site.kimnow.toy.common.entity;
+package site.kimnow.toy.common.base.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

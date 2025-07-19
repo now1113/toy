@@ -3,12 +3,10 @@ package site.kimnow.toy.common.base.domain;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.domain.AfterDomainEventPublication;
-import org.springframework.data.domain.DomainEvents;
 import org.springframework.util.Assert;
+import site.kimnow.toy.common.base.event.DomainEvent;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,20 +14,20 @@ import java.util.List;
 public abstract class AggregateRoot<T extends DomainEntity<T, TID>, TID> extends DomainEntity<T, TID> {
 
     @Transient
-    private final transient List<Object> domainEvents = new ArrayList<>();
+    private final transient List<DomainEvent> domainEvents = new ArrayList<>();
 
-    protected void registerEvent(T event) {
+    protected void registerEvent(DomainEvent event) {
         Assert.notNull(event, "Domain event must not be null");
         this.domainEvents.add(event);
     }
 
-    @AfterDomainEventPublication
-    protected void clearDomainEvents() {
-        this.domainEvents.clear();
+    // 도메인 이벤트 리스트 읽기
+    public List<DomainEvent> getDomainEvents() {
+        return Collections.unmodifiableList(this.domainEvents);
     }
 
-    @DomainEvents
-    protected Collection<Object> domainEvents() {
-        return Collections.unmodifiableList(this.domainEvents);
+    // 도메인 이벤트 리스트 비우기
+    public void clearDomainEvents() {
+        this.domainEvents.clear();
     }
 }

@@ -25,16 +25,16 @@ public class UserMapper implements DomainEntityMapper<User, UserEntity> {
 
     @Override
     public UserEntity toEntity(User domain) {
-        return new UserEntity(
-                domain.getId() != null ? domain.getId().longValue() : null,
-                domain.getUserId(),
-                domain.getEmail(),
-                domain.getActiveEmail(),
-                domain.getName(),
-                domain.getPassword(),
-                domain.getAuthority(),
-                domain.getStatus(),
-                domain.isDeleted()
-        );
+        return UserEntity.builder()
+                .id(domain.getId() != null ? domain.getId().longValue() : null)
+                .userId(domain.getUserId())
+                .email(domain.getEmail())
+                .activeEmail(domain.getActiveEmail())
+                .name(domain.getName())
+                .password(domain.getPassword())
+                .authority(domain.getAuthority())
+                .status(domain.getStatus())
+                .deleted(domain.isDeleted())
+                .build();
     }
 }

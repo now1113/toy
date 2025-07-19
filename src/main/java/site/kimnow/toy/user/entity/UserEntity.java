@@ -2,11 +2,12 @@ package site.kimnow.toy.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import site.kimnow.toy.common.entity.BaseTimeEntity;
+import site.kimnow.toy.common.base.entity.BaseTimeEntity;
 
 
 @Entity
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name= "users", indexes = {

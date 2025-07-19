@@ -1,10 +1,12 @@
 package site.kimnow.toy.user.domain;
 
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import site.kimnow.toy.common.base.domain.AggregateRoot;
 import site.kimnow.toy.common.util.RandomIdGenerator;
 import site.kimnow.toy.user.enums.UserAuthority;
 import site.kimnow.toy.user.enums.UserStatus;
+import site.kimnow.toy.user.event.UserJoinedEvent;
 
 import java.time.LocalDateTime;
 
@@ -31,22 +33,8 @@ public class User extends AggregateRoot<User, UserId> {
         return id;
     }
 
-    public User withEncodedPassword(String encodedPassword) {
-        return User.builder()
-                .userId(this.userId)
-                .email(this.email)
-                .name(this.name)
-                .password(encodedPassword)
-                .authority(this.authority)
-                .status(this.status)
-                .deleted(this.deleted)
-                .createTime(this.createTime)
-                .modifyTime(this.modifyTime)
-                .build();
-    }
-
     public static User create(String email, String name, String password) {
-        return User.builder()
+        User user = User.builder()
                 .userId(RandomIdGenerator.generate())
                 .email(email)
                 .name(name)
@@ -57,10 +45,16 @@ public class User extends AggregateRoot<User, UserId> {
                 .createTime(LocalDateTime.now())
                 .modifyTime(LocalDateTime.now())
                 .build();
+
+        user.registerEvent(UserJoinedEvent.from(user));
+        return user;
+    }
+
+    public void encodePassword(PasswordEncoder encoder) {
+        this.password = encoder.encode(password);
     }
 
     public void completeEmailVerification() {
         this.status = UserStatus.EMAIL_VERIFIED.getStatus();
     }
-
 }
