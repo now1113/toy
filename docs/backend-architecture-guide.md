@@ -11,36 +11,91 @@
 ## 2. 계층 구조
 
 ```text
-Controller → Application → Domain → Repository
-     ↓             ↓             ↕
-    DTO         Command       Entity
+Controller → Application → Service → Repository
+     ↓             ↓           ↓         ↕
+    DTO       Command/Query  Domain    Entity
 ```
 
 - **Controller**: 외부 요청 수신 및 응답 Wrapping
 - **Application**: 흐름 조율, 유효성 검사, 트랜잭션 처리 책임
-- **Service**: 도메인 로직 수행 및 외부 컴포넌트 호출
-- **Domain**: 비즈니스 로직을 담당하는 순수 객체
-- **Entity**: DB 매핑 전용 객체
-- **Repository**: JPA 인터페이스 및 어댑터 구성
-- **Mapper**: Domain ↔ Entity 간의 변환을 담당. (필요시 Application 계층에서도 사용)
+- **Service**: 실질적인 비즈니스 로직을 수행하는 계층입니다. 도메인 객체와 리포지토리를 사용하여 로직을 수행.
+- **Domain**: 순수한 비즈니스 규칙과 로직을 담는 객체, 상태 변경 시 이벤트를 생성하여 자신에게 등록(registerEvent)한다.
+- **Entity**: 데이터베이스 테이블과 직접 매핑되는 객체.
+- **Repository**: 데이터의 영속성(Persistence)을 책임진다. Domain ↔ Entity 변환을 위해 Mapper를 사용하며, 도메인 이벤트 발행(Event Dispatching)의 책임을 가진다.
+- **Mapper**: Domain ↔ Entity 간의 상호 변환을 담당.
 
-## 3. 도메인 객체 불변성 유지
+## 3. 도메인 공통 핵심 컴포넌트
 
-- setter 사용을 지양하고, 상태 변경이 필요한 경우 `withXxx()` 형태의 새 인스턴스를 반환한다.
-- 예)
+### `AggregateRoot`
+- **역할**: 애그리거트 경계의 루트로서, 상태 변경 과정에서 발생하는 도메인 이벤트를 수집, 관리
+- **주요 메서드**
+  - `registerEvent(DomainEvent event)`: 도메인 이벤트 등록
+  - `getDomainEvents()`: 수집된 이벤트 읽기 전용 반환
+  - `clearDomainEvents()`: 이벤트 버퍼 초기화
+- **도입 이유**
+  - **트랜잭션 경계 명확화**: 하나의 애그리거트 단위로 일관된 트랜잭션 처리 보장
+  - **느슨한 후처리**: 이벤트 기반 후속 작업을 유연하게 연결
 
-```java
-public User withEncodedPassword(String encodedPassword) {
-    return User.builder()
-        .userId(this.userId)
-        .email(this.email)
-        .name(this.name)
-        .password(encodedPassword)
-        .authority(this.authority)
-        .isDeleted(this.isDeleted)
-        .build();
-}
-```
+### `DomainEntity`
+- **역할**: 모든 도메인 엔티티의 공통 기능(ID 기반 동등성, 해시코드)을 제공하는 추상 베이스 클래스
+- **주요 기능**
+  - `equals() / hashCode()`: `getId()` 값 기준 동등성 비교
+  - `getId()`: 엔티티 고유 식별자 반환(추상 메서드)
+- **도입 이유**
+  - **일관된 식별 로직**: 엔티티 비교 시 중복 구현 제거
+  - **안정성 향상**: 잘못된 동등성 비교로 인한 버그 예방
+
+### `ValueObject`
+- **역할**: 불변값 객체의 동등성 로직을 제공하는 추상 베이스 클래스
+- **주요 기능**:
+  - `equals() / hashCode()`: 내부 필드 배열(`getEqualityFields()`) 기반 비교
+- **도입 이유**
+    - **값 기반 동등성**: 객체 속성 값만으로 비교해 참조 공유 시 안전
+    - **재사용성**: 다양한 값 객체에 공통 로직 적용 가능
+
+### `LongTypeIdentifier`
+- **역할**: Long 원시 ID를 래핑한 식별자 전용 값 객체(Value Object)
+- **주요 기능**
+  - `getEqualityFields()`: 동등성 비교용 필드 배열 제공 
+  - `longValue()`: 내부 Long 값 반환
+- **도입 이유**
+  - **타입 안전성**: `UserId`,` OrderId` 등 서로 다른 ID를 구분 
+  - **가독성 향상**: 로그·메서드 시그니처에 도메인 맥락 노출
+
+### `DomainEvent`
+- **역할**: 도메인 이벤트의 `마커 인터페이스`
+- **도입 이유**
+  - **추상화**: 모든 이벤트를 공통 타입으로 관리 
+  - **확장성**: 신규 이벤트 구현체 추가만으로 즉시 통합 처리
+
+### `DomainRepository`
+- **역할**: 도메인 객체의 저장·조회·삭제 등 영속성 작업을 추상화한 포트(인터페이스)
+- **주요 메서드**
+  - `save(DOMAIN root)`
+  - `Optional<DOMAIN> find(ID id)`
+  - `removeById(ID id)`
+  - `remove(DOMAIN root)`
+- **도입 이유**
+  - **계층 분리**: 도메인 서비스와 영속 계층 완전 분리
+  - **테스트 용이**: 포트를 모킹해 도메인 로직 단위 테스트 용이
+
+### `BaseJpaRepository`
+- **역할**: `DomainRepository`를 JPA로 구현한 추상 클래스
+- **주요 기능**
+  - `save()`:` Domain → Entity` 변환, 저장, 이벤트 디스패치 포함
+  - `find()`, `removeById()`, `remove()`: 공통 CRUD 처리
+- **도입 이유**
+  - **중복 제거**: 매핑·CRUD·이벤트 발행 로직을 한 곳에 집중
+  - **생산성 향상**: 각 리포지토리 구현 시 도메인별 로직에만 집중
+
+### `DomainEntityMapper`
+- **역할**: 도메인 객체(`AggregateRoot`)와 JPA 엔티티(`@Entity`) 간 변환을 담당
+- **주요 메서드**
+  - `toDomain(ENTITY entity)`: 엔티티 → 도메인
+  - `toEntity(DOMAIN domain)`: 도메인 → 엔티티
+- **도입 이유**
+  - **단일 책임**: 변환 로직을 중앙화해 유지보수·테스트 용이
+  - **의존 역전**: 도메인 모델이 JPA 스펙에 의존하지 않음
 
 ## 4. 객체 변환 규칙
 
@@ -53,8 +108,8 @@ public User withEncodedPassword(String encodedPassword) {
 ### Domain ↔ Entity 변환 (Mapper 사용)
 
 - `Domain ↔ Entity` 간의 변환은 영속성 계층과의 분리를 위해 **Mapper**에서 수행합니다.
-- Mapper는 **MapStruct**를 사용하여 boilerplate 코드를 줄이고, `@Mapper(componentModel = "spring")`으로 등록해 Spring Bean으로 주입하여 사용합니다.
-- Mapper는 RepositoryAdapter 등 영속성 계층에서 주로 사용됩니다.
+- Mapper는 인터페이스로 정의하고, 이를 직접 구현한 클래스를 만들어 사용합니다. 이를 통해 변환 로직을 중앙에서 관리하고 테스트 용이성을 확보합니다.
+- Mapper는 Repository 구현체에서 주로 사용됩니다.
 
 ## 5. Response 처리 원칙
 

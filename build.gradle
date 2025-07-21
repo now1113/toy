@@ -72,6 +72,9 @@ dependencies {
 
 	// mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:mysql'
 }
 
 def querydslDir = 'src/main/generated'
